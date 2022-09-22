@@ -1,0 +1,586 @@
+paste (3.5.0+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 26 Oct 2020 15:51:47 +0100
+
+paste (3.4.4+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * d/control: Change Maintainer to Debian Python Team
+    <team+python@tracker.debian.org>.
+  * d/control: Fix Vcs-* after repository move.
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 21 Sep 2020 14:51:24 +0200
+
+paste (3.4.3+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Thu, 20 Aug 2020 09:00:39 +0200
+
+paste (3.4.2+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * d/p/0002-Skip-test-with-network-access: Mark set forwarded not-
+    needed
+
+ -- Ondřej Nový <onovy@debian.org>  Wed, 22 Jul 2020 11:20:22 +0200
+
+paste (3.4.1+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump debhelper compat level to 13.
+  * d/copyright: Bump my copyright year.
+
+ -- Ondřej Nový <onovy@debian.org>  Fri, 12 Jun 2020 10:54:37 +0200
+
+paste (3.4.0+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Fri, 21 Feb 2020 12:22:08 +0100
+
+paste (3.3.0+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * d/control: Add Rules-Requires-Root: no.
+  * Bump Standards-Version to 4.5.0 (no changes).
+
+ -- Ondřej Nový <onovy@debian.org>  Thu, 30 Jan 2020 10:21:29 +0100
+
+paste (3.2.6+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 20 Jan 2020 08:02:09 +0100
+
+paste (3.2.4+dfsg1-2) unstable; urgency=medium
+
+  * Team upload.
+  * Drop python2 support; Closes: #937244
+
+ -- Sandro Tosi <morph@debian.org>  Sat, 11 Jan 2020 23:23:53 -0500
+
+paste (3.2.4+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Wed, 08 Jan 2020 16:15:13 +0100
+
+paste (3.2.3+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Tue, 10 Dec 2019 13:25:31 +0100
+
+paste (3.2.2+dfsg1-2) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Standards-Version to 4.4.1.
+
+ -- Ondřej Nový <onovy@debian.org>  Sun, 20 Oct 2019 21:47:53 +0200
+
+paste (3.2.0+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Fri, 13 Sep 2019 12:26:57 +0200
+
+paste (3.1.0+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Ondřej Nový <onovy@debian.org>  Fri, 09 Aug 2019 11:20:46 +0200
+
+paste (3.0.8+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release
+  * Bump standards version to 4.4.0 (no changes)
+  * d/watch: Use +dfsg1 as repack suffix
+
+ -- Ondřej Nový <onovy@debian.org>  Tue, 16 Jul 2019 15:57:45 +0200
+
+paste (3.0.6+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Ondřej Nový <onovy@debian.org>  Tue, 22 Jan 2019 14:57:25 +0100
+
+paste (3.0.5+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * Bump standards version to 4.3.0 (no changes)
+  * Bump debhelper compat level to 12 and use debhelper-compat
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 31 Dec 2018 22:49:43 +0100
+
+paste (3.0.4+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * Add python{,3}-pytest-runner to B-D
+
+ -- Ondřej Nový <onovy@debian.org>  Thu, 08 Nov 2018 10:20:02 +0100
+
+paste (3.0.1+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * d/p/0001-Use-correct-variable-when-building-message-for-excep.patch:
+    Drop, applied upstream
+  * d/p/0003-python-37-support.patch: Drop, applied upstream
+  * d/p/0002-Skip-test-with-network-access.patch: Rebased
+  * d/control:
+    - Switch nose to pytest
+    - Move homepage to pythonpaste.readthedocs.io
+  * d/upstream/metadata: Move repository to Github
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 29 Oct 2018 09:50:34 +0100
+
+paste (2.0.3+dfsg-7) unstable; urgency=medium
+
+  * Use 'python3 -m sphinx' instead of sphinx-build for building docs
+  * Bump standards version to 4.2.1 (no changes)
+  * d/control: Demote libjs-mochikit to suggests
+
+ -- Ondřej Nový <onovy@debian.org>  Sun, 30 Sep 2018 12:58:41 +0200
+
+paste (2.0.3+dfsg-6) unstable; urgency=medium
+
+  * Remove Thomas Goirand from uploaders, this was not authorized or even
+    asked first
+  * Bump standards version to 4.1.2 (no changes)
+  * Bump debhelper compat level to 11
+  * d/changelog: Remove empty line from end of a file
+  * python-paste-doc.lintian-overrides: Remove, not needed
+  * Add upstream metadata
+
+ -- Ondřej Nový <onovy@debian.org>  Tue, 14 Aug 2018 09:43:13 +0200
+
+paste (2.0.3+dfsg-5) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * Bumped debhelper version to 10
+  * d/control: Set Vcs-* to salsa.debian.org
+  * d/copyright: Use https protocol in Format field
+  * d/control: Remove ancient X-Python-Version field
+  * d/control: Remove ancient X-Python3-Version field
+
+  [ Thomas Goirand ]
+  * Switch away from git-dpm.
+  * Add myself as uploader.
+  * Ran wrap-and-sort -bast.
+  * Add 0003-python-37-support.patch.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 07 Aug 2018 14:28:38 +0000
+
+paste (2.0.3+dfsg-4) unstable; urgency=medium
+
+  * Suggest httpd-wsgi virtual package instead of libapache2-mod-wsgi
+    (Closes: #831340, #831341)
+
+ -- Ondřej Nový <onovy@debian.org>  Thu, 22 Sep 2016 22:54:07 +0200
+
+paste (2.0.3+dfsg-3) unstable; urgency=medium
+
+  * Removed versioned build depedencies older then wheezy
+  * Removed suggests python-pgsql, it doesn't exists
+  * Added suggests python3-pastedeploy to Py3 package
+  * d/{control,copyright}: Use my @debian.org email address
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 20 Jun 2016 22:59:26 +0200
+
+paste (2.0.3+dfsg-2) unstable; urgency=medium
+
+  * Use autopkgtest-pkg-python testsuite
+  * Standards-Version is 3.9.8 now (no changes needed)
+  * d/watch: Use https protocol
+  * Added extend-diff-ignore for egg-info
+  * d/copyright: Added myself to Debian part
+  * Removed useless paste/util/template.py.2015-04-30-123224 file
+
+ -- Ondřej Nový <novy@ondrej.org>  Mon, 30 May 2016 19:03:56 +0200
+
+paste (2.0.3+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * Removed 0001-Py3k-fixes.patch (applied upstream)
+  * Added 0001-Use-correct-variable-when-building-message-for-excep.patch
+    (Closes: #695253)
+
+ -- Ondřej Nový <novy@ondrej.org>  Thu, 10 Mar 2016 19:09:13 +0100
+
+paste (2.0.2+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * Added myself as uploader and removed Piotr Ożarowski (Closes: #740529)
+  * wrap-and-sort
+  * Fixed Vcs-Git (git->https)
+  * d/copyright changed to machine-readable format
+  * Fixed d/watch file
+  * Added Build-Depends: dh-python
+  * Removed all patches
+  * Added 0001-Py3k-fixes.patch
+  * Documentation moved to solo package python-paste-doc
+  * d/rules rewritten
+  * Added Build-Depends-Indep: python(3)-nose and python(3)-six
+  * Standards-Version is 3.9.7 now
+  * d/copyright: Files-Excluded: paste/evalexception/media/MochiKit.packed.js
+  * d/watch: Added dfsg suffix
+  * Added simple Debian tests
+  * Bumped Python minimal version to 2.6 and 3.4
+
+ -- Ondřej Nový <novy@ondrej.org>  Fri, 04 Mar 2016 23:24:56 +0100
+
+paste (1.7.5.1-6) unstable; urgency=low
+
+  * Team upload.
+  * Fix one more python2/3 incompatibility in the lint.py.
+
+ -- Dmitrijs Ledkovs <dmitrij.ledkov@ubuntu.com>  Thu, 19 Sep 2013 17:19:33 +0100
+
+paste (1.7.5.1-5) unstable; urgency=low
+
+  [ Jakub Wilk ]
+  * Use canonical URIs for Vcs-* fields.
+
+  [ Dmitrijs Ledkovs ]
+  * Team upload.
+  * Add python3 package (Closes: #714787)
+  * Bump debhelper to 9
+  * Bump standards to 3.9.4
+  * Add fedora, and own python3 patches.
+  * Use 2to3.
+
+ -- Dmitrijs Ledkovs <dmitrij.ledkov@ubuntu.com>  Sat, 14 Sep 2013 14:35:57 +0100
+
+paste (1.7.5.1-4.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Adds a Breaks: python-pastescript (<< 1.7.3-7~1) (Closes: #662678).
+
+ -- Thomas Goirand <zigo@debian.org>  Sun, 29 Apr 2012 08:24:46 +0000
+
+paste (1.7.5.1-4) unstable; urgency=low
+
+  * Add also missing __init__.py file
+
+ -- Piotr Ożarowski <piotr@debian.org>  Thu, 22 Sep 2011 22:00:39 +0200
+
+paste (1.7.5.1-3) unstable; urgency=low
+
+  * Remove .pth file (introduced in last upload by accident)
+  * Add build-indep and build-arch targets in debian/rules
+  * Let dh_sphinxdoc handle documentation files, python-sphinx build
+    dependency bumped to 1.0.7+dfsg-1
+
+ -- Piotr Ożarowski <piotr@debian.org>  Thu, 22 Sep 2011 20:10:40 +0200
+
+paste (1.7.5.1-2) unstable; urgency=low
+
+  * objects.inv is no longer compressed (closes: #608759)
+  * Convert to dh_python2
+  * Source format changed to 3.0 (quilt)
+  * No longer conflicts/replaces paste-common
+  * Standards-Version bumped to 3.9.2 (no changes needed)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Sat, 28 May 2011 17:12:08 +0200
+
+paste (1.7.5.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Move libjs-mochikit to Recommends (python-support will not generate
+    symlink to MochiKit if the file is not available while the
+    update-python-modules trigger is invoked and thus breaks debugger;
+    partially closes: 596500)
+  * Standards-Version bumped to 3.9.1 (no changes needed)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Fri, 22 Oct 2010 10:47:47 +0200
+
+paste (1.7.4-1) unstable; urgency=high
+
+  * New upstream release - fixes XSS bug (security issue) with not found
+    handlers for paste.urlparser.StaticURLParser and paste.urlmap.URLMap
+
+ -- Piotr Ożarowski <piotr@debian.org>  Fri, 25 Jun 2010 20:30:19 +0200
+
+paste (1.7.3.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Piotr Ożarowski <piotr@debian.org>  Tue, 20 Apr 2010 19:52:41 +0200
+
+paste (1.7.3+hg20100401-1) unstable; urgency=low
+
+  * New upstream release (+ few fixes from tip)
+  * patches removed, no longer needed
+  * Standards-Version bumped to 3.8.4 (no changes needed)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Fri, 02 Apr 2010 00:47:38 +0200
+
+paste (1.7.2-4) unstable; urgency=low
+
+  * Build depend on python-support >= 1.0.1
+    + remove libjs-mochikit from Build-Depends-Indep
+    + remove mochikit symlink workaround from debian/rules
+  * Prepare for Python 2.6:
+    + use py_libdir in debian/rules (LP: #361163)
+    + add r7641.patch (taken from upstream repository) - fixes paste.httpserver
+
+ -- Piotr Ożarowski <piotr@debian.org>  Wed, 08 Apr 2009 13:33:33 +0200
+
+paste (1.7.2-3) unstable; urgency=low
+
+  * Link MochiKit before invoking dh_pysupport (Closes: #516320)
+    + add libjs-mochikit to Build-Depends-Indep (pysupport's
+      movemodules needs it at build time)
+  * Standards-Version bumped to 3.8.1 (no changes needed)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Tue, 07 Apr 2009 20:37:13 +0200
+
+paste (1.7.2-2) unstable; urgency=low
+
+  [ Sandro Tosi ]
+  * Switch Vcs-Browser field to viewsvn
+
+  [ Piotr Ożarowski ]
+  * Change Debian packaging license to MIT (to match upstream)
+  * Upload to unstable
+
+ -- Piotr Ożarowski <piotr@debian.org>  Sun, 15 Feb 2009 20:01:44 +0100
+
+paste (1.7.2-1) experimental; urgency=low
+
+  * New upstream release (upload to experimental due to Lenny freeze, to ease
+    testing rev. dependencies)
+  * Build docs using Sphinx: (Closes: #456554)
+    + python-sphinx replaced python-docutils build dependency
+    + new suggested packages: libjs-mochikit and libjs-jquery
+
+ -- Piotr Ożarowski <piotr@debian.org>  Wed, 29 Oct 2008 22:50:01 +0100
+
+paste (1.7.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Standards-Version bumped to 3.8.0:
+    + debian/README.source file added
+
+ -- Piotr Ożarowski <piotr@debian.org>  Fri, 13 Jun 2008 23:59:22 +0200
+
+paste (1.7-1) unstable; urgency=low
+
+  [ Sandro Tosi ]
+  * debian/control
+    - updated recommends to python-openssl (python-pyopenssl is a transitional
+      package)
+  * debian/python-paste.doc-base
+    - section updated to Programming/Python
+  * debian/copyright
+    - added copyright notice
+    - renamed previous copyright holder to upstream author notice
+    - added copyright/license notices for file with different one from main
+
+  [ Piotr Ożarowski ]
+  * New upstream release
+  * Remove paste-common package as python-support is handling namespaces now
+    + python-paste package replaces and conflicts with paste-common
+  * Replace python-setuptools with python-pkg-resources in Depends
+    (closes: #468716)
+  * Change setuptools' required build version to (>= 0.6b3-1~) to ease
+    backports
+  * remove_link_to_wareweb patch no longer needed
+
+ -- Piotr Ożarowski <piotr@debian.org>  Sat, 24 May 2008 20:47:41 +0200
+
+paste (1.6-2) unstable; urgency=low
+
+  * Add python-scgi to Recommends (LP: #184162)
+  * Add libapache2-mod-wsgi and libapache2-mod-scgi to Suggests
+
+ -- Piotr Ożarowski <piotr@debian.org>  Fri, 18 Jan 2008 23:12:25 +0100
+
+paste (1.6-1) unstable; urgency=low
+
+  [ Sandro Tosi ]
+  * Uniforming Vcs-Browser field (trunk dir added to the link)
+
+  [ Piotr Ożarowski ]
+  * New upstream release
+  * Switch to python-support. All paste packages will now depend on
+    paste-common (>= 1.6-1) to make sure all use pysupport
+  * Compress binary package with bzip2
+  * Add remove_shebang and remove_link_to_wareweb patches
+    (second one partially fixes #456554). dpatch added to build depends
+  * Bump Standards-Version to 3.7.3 (no changes needed)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Sat, 05 Jan 2008 18:48:35 +0100
+
+paste (1.5.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Piotr Ożarowski <piotr@debian.org>  Tue, 23 Oct 2007 19:24:43 +0200
+
+paste (1.5-1) unstable; urgency=low
+
+  * New upstream release
+  * Homepage field added
+  * Rename XS-Vcs-* fields to Vcs-* (dpkg supports them now)
+
+ -- Piotr Ożarowski <piotr@debian.org>  Thu, 18 Oct 2007 23:19:13 +0200
+
+paste (1.4.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Add python-pyopenssl to Recommends
+
+ -- Piotr Ożarowski <piotr@debian.org>  Mon, 10 Sep 2007 22:22:27 +0200
+
+paste (1.4.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Add python-ctypes and python-openid to Recommends
+
+ -- Piotr Ożarowski <piotr@debian.org>  Tue, 04 Sep 2007 23:57:38 +0200
+
+paste (1.4-1) unstable; urgency=low
+
+  * New upstream release
+  * Add python-formencode to Depends and libapache2-mod-python to Suggests
+  * debian/rules cleanups
+  * Changed my address to piotr@debian.org
+
+ -- Piotr Ożarowski <piotr@debian.org>  Tue, 26 Jun 2007 20:01:59 +0200
+
+paste (1.3-2) unstable; urgency=low
+
+  *  Upload to unstable
+
+ -- Piotr Ożarowski <piotr@debian.org>  Sun, 08 Apr 2007 16:50:24 +0200
+
+paste (1.3-1) experimental; urgency=low
+
+  * New upstream release (upload to experimental due to Etch freeze)
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Wed,  7 Mar 2007 18:22:34 +0100
+
+paste (1.2.1-1) experimental; urgency=low
+
+  * New upstream release (upload to experimental due to Etch freeze)
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Thu,  1 Feb 2007 20:30:16 +0100
+
+paste (1.1.1-1) experimental; urgency=low
+
+  * New upstream release (upload to experimental due to Etch freeze)
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Fri, 22 Dec 2006 16:07:04 +0100
+
+paste (1.1-1) experimental; urgency=low
+
+  * New upstream release (upload to experimental due to Etch freeze)
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Mon, 18 Dec 2006 14:19:51 +0100
+
+paste (1.0.1-1) unstable; urgency=medium
+
+  * New upstream release. This release includes *only* the security
+    fix, version 1.1 (released simultaneously) will be uploaded to
+    experimental (due to Etch freeze)
+  * Added XS-Vcs-Svn and XS-Vcs-Browser fields to debian/control
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Mon, 18 Dec 2006 13:15:20 +0100
+
+paste (1.0-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/rules cleaned:
+    + dh_python removed, dh_pycentral will generate all data now
+    + unneeded dh_installexamples, dh_strip and dh_shlibdeps calls removed
+  * debian/control: bumped debhelper and python-central required versions due
+    to dh_python call removal
+  * Test files are no longer installed as examples
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Mon, 23 Oct 2006 16:29:21 +0200
+
+paste (0.9.8.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Patch for docs index file removed (fixed in upstream)
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Tue,  5 Sep 2006 19:44:51 +0200
+
+paste (0.9.8-1) unstable; urgency=low
+
+  * New upstream release
+  * Removed bashism in build script
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Tue,  5 Sep 2006 16:36:01 +0200
+
+paste (0.9.7-1) unstable; urgency=low
+
+  * New upstream release
+  * Added debian/pycompat file
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Sat, 12 Aug 2006 15:37:22 +0200
+
+paste (0.9.6-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Fri, 28 Jul 2006 00:02:43 +0200
+
+paste (0.9.5-1) unstable; urgency=low
+
+  * New upstream release
+  * Documentation is now build from sources:
+    - debian/rules updated
+    - Add build dependency on python-docutils
+  * Add doc-base data
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Thu, 20 Jul 2006 23:49:45 +0200
+
+paste (0.9.3-3) unstable; urgency=low
+
+  * paste-common's dependency on python filled by hand
+    (${python:Depends} generates python (>= 2.4) which makes
+    python-pastedeploy uninstallable for python 2.3)
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Mon, 10 Jul 2006 14:02:32 +0200
+
+paste (0.9.3-2) unstable; urgency=low
+
+  * Update for the new python policy (closes: #373474)
+  * Convert to python-central
+  * Removed 01_script_not_executable.patch
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Tue, 13 Jun 2006 19:00:25 +0200
+
+paste (0.9.3-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Fri, 26 May 2006 23:18:53 +0200
+
+paste (0.9.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Thu, 18 May 2006 21:19:31 +0200
+
+paste (0.9.1-3) unstable; urgency=low
+
+  * Common paste* modules file moved to paste-common package
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Sun, 14 May 2006 02:29:59 +0200
+
+paste (0.9.1-2) unstable; urgency=low
+
+  * Egg directory name fixed
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Wed, 10 May 2006 18:41:48 +0200
+
+paste (0.9.1-1) unstable; urgency=low
+
+  * Initial release (closes: #366033)
+
+ -- Piotr Ozarowski <ozarow@gmail.com>  Sun,  7 May 2006 16:53:19 +0200

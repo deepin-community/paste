@@ -1,0 +1,20 @@
+Subject: Skip test with network access
+Author: Ondřej Nový <novy@ondrej.org>
+Forwarded: not-needed
+
+---
+ tests/test_proxy.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+--- a/tests/test_proxy.py
++++ b/tests/test_proxy.py
+@@ -1,6 +1,9 @@
+ from paste import proxy
+ from paste.fixture import TestApp
+ 
++import pytest
++
++@pytest.mark.skip(reason="Prevent internet access")
+ def test_proxy_to_website():
+     # Not the most robust test...
+     # need to test things like POSTing to pages, and getting from pages
