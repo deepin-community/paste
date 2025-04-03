@@ -9,9 +9,8 @@ for testing WSGI applications, and the `TestFileEnvironment
 effects of command-line scripts.
 """
 
-from __future__ import print_function
-
 import sys
+import io
 import random
 import mimetypes
 import time
@@ -20,16 +19,26 @@ import shutil
 import smtplib
 import shlex
 import re
-import six
 import subprocess
-from six.moves import cStringIO as StringIO
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib import parse as urlparse
-from six.moves.http_cookies import BaseCookie
+from urllib import parse as urlparse
+from urllib.parse import urlencode
+from http.cookies import BaseCookie
 
-from paste import wsgilib
-from paste import lint
+from paste import lint, wsgilib
 from paste.response import HeaderDict
+from paste.util import NO_DEFAULT
+
+def ensure_binary(s):
+    if isinstance(s, bytes):
+        return s
+    else:
+        return s.encode('utf-8')
+
+def ensure_str(s, encoding='utf-8', errors='strict'):
+    if type(s) is str:
+        return s
+    else:
+        return s.decode(encoding, errors)
 
 def tempnam_no_warning(*args):
     """
@@ -39,15 +48,12 @@ def tempnam_no_warning(*args):
     """
     return os.tempnam(*args)
 
-class NoDefault(object):
-    pass
-
 def sorted(l):
     l = list(l)
     l.sort()
     return l
 
-class Dummy_smtplib(object):
+class Dummy_smtplib:
 
     existing = None
 
@@ -88,7 +94,7 @@ class AppError(Exception):
     pass
 
 
-class TestApp(object):
+class TestApp:
 
     __test__ = False  # Ignore with pytest test collection.
 
@@ -122,7 +128,7 @@ class TestApp(object):
         ``post_request_hook`` is a function, similar to
         ``pre_request_hook``, to be called after requests are made.
         """
-        if isinstance(app, (six.binary_type, six.text_type)):
+        if isinstance(app, (bytes, str)):
             from paste.deploy import loadapp
             # @@: Should pick up relative_to from calling module's
             # __file__
@@ -185,7 +191,7 @@ class TestApp(object):
             extra_environ = {}
         __tracebackhide__ = True  # Hide from pytest:
         if params:
-            if not isinstance(params, (six.binary_type, six.text_type)):
+            if not isinstance(params, (bytes, str)):
                 params = urlencode(params, doseq=True)
             if '?' in url:
                 url += '&'
@@ -219,7 +225,7 @@ class TestApp(object):
         if hasattr(params, 'items'):
             # Some other multi-dict like format
             params = urlencode(params.items())
-        if six.PY3 and isinstance(params, six.text_type):
+        if isinstance(params, str):
             params = params.encode('utf8')
         if upload_files:
             params = urlparse.parse_qsl(params, keep_blank_values=True)
@@ -235,7 +241,7 @@ class TestApp(object):
             environ['QUERY_STRING'] = ''
         environ['CONTENT_LENGTH'] = str(len(params))
         environ['REQUEST_METHOD'] = method
-        environ['wsgi.input'] = six.BytesIO(params)
+        environ['wsgi.input'] = io.BytesIO(params)
         self._set_headers(headers, environ)
         environ.update(extra_environ)
         req = TestRequest(url, environ, expect_errors)
@@ -330,24 +336,23 @@ class TestApp(object):
         """
         boundary = '----------a_BoUnDaRy%s$' % random.random()
         content_type = 'multipart/form-data; boundary=%s' % boundary
-        if six.PY3:
-            boundary = boundary.encode('ascii')
+        boundary = boundary.encode('ascii')
 
         lines = []
         for key, value in params:
             lines.append(b'--'+boundary)
-            line = b'Content-Disposition: form-data; name="%s"' % six.ensure_binary(key)
+            line = b'Content-Disposition: form-data; name="%s"' % ensure_binary(key)
             lines.append(line)
             lines.append(b'')
-            line = six.ensure_binary(value)
+            line = ensure_binary(value)
             lines.append(line)
         for file_info in files:
             key, filename, value = self._get_file_info(file_info)
             lines.append(b'--'+boundary)
             line = (b'Content-Disposition: form-data; name="%s"; filename="%s"'
-                         % (six.ensure_binary(key), six.ensure_binary(filename)))
+                         % (ensure_binary(key), ensure_binary(filename)))
             lines.append(line)
-            fcontent = mimetypes.guess_type(six.ensure_str(filename, 'ascii', 'ignore'))[0]
+            fcontent = mimetypes.guess_type(ensure_str(filename, 'ascii', 'ignore'))[0]
             line = (b'Content-Type: %s'
                     % (fcontent.encode('ascii') if fcontent else b'application/octet-stream'))
             lines.append(line)
@@ -452,8 +457,7 @@ class TestApp(object):
             if res.status >= 200 and res.status < 400:
                 return
             body = res.body
-            if six.PY3:
-                body = body.decode('utf8', 'xmlcharrefreplace')
+            body = body.decode('utf8', 'xmlcharrefreplace')
             raise AppError(
                 "Bad response: %s (not 200 OK or 3xx redirect for %s)\n%s"
                 % (res.full_status, res.request.url,
@@ -472,10 +476,10 @@ class TestApp(object):
         return TestResponse(self, status, headers, body, errors,
                             total_time)
 
-class CaptureStdout(object):
+class CaptureStdout:
 
     def __init__(self, actual):
-        self.captured = StringIO()
+        self.captured = io.StringIO()
         self.actual = actual
 
     def write(self, s):
@@ -493,7 +497,7 @@ class CaptureStdout(object):
         return self.captured.getvalue()
 
 
-class TestResponse(object):
+class TestResponse:
 
     __test__ = False  # Ignore with pytest test collection.
 
@@ -556,8 +560,7 @@ class TestResponse(object):
         form_texts = []
         started = None
         body = self.body
-        if not six.PY2:
-            body = body.decode('utf8', 'xmlcharrefreplace')
+        body = body.decode('utf8', 'xmlcharrefreplace')
         for match in self._tag_re.finditer(body):
             end = match.group(1) == '/'
             tag = match.group(2).lower()
@@ -580,7 +583,7 @@ class TestResponse(object):
             if form.id:
                 forms[form.id] = form
 
-    def header(self, name, default=NoDefault):
+    def header(self, name, default=NO_DEFAULT):
         """
         Returns the named header; an error if there is not exactly one
         matching header (unless you give a default -- always an error
@@ -594,7 +597,7 @@ class TestResponse(object):
                     % (name, found, value))
                 found = value
         if found is None:
-            if default is NoDefault:
+            if default is NO_DEFAULT:
                 raise KeyError(
                     "No header found: %r (from %s)"
                     % (name, ', '.join([n for n, v in self.headers])))
@@ -813,9 +816,9 @@ class TestResponse(object):
         of the response.  Whitespace is normalized when searching
         for a string.
         """
-        if not isinstance(s, (six.binary_type, six.text_type)):
+        if not isinstance(s, (bytes, str)):
             s = str(s)
-        if isinstance(s, six.text_type):
+        if isinstance(s, str):
             ## FIXME: we don't know that this response uses utf8:
             s = s.encode('utf8')
         return (self.body.find(s) != -1
@@ -833,7 +836,7 @@ class TestResponse(object):
         if 'no' in kw:
             no = kw['no']
             del kw['no']
-            if isinstance(no, (six.binary_type, six.text_type)):
+            if isinstance(no, (bytes, str)):
                 no = [no]
         else:
             no = []
@@ -855,16 +858,14 @@ class TestResponse(object):
 
     def __repr__(self):
         body = self.body
-        if six.PY3:
-            body = body.decode('utf8', 'xmlcharrefreplace')
+        body = body.decode('utf8', 'xmlcharrefreplace')
         body = body[:20]
         return '<Response %s %r>' % (self.full_status, body)
 
     def __str__(self):
         simple_body = b'\n'.join([l for l in self.body.splitlines()
                                  if l.strip()])
-        if six.PY3:
-            simple_body = simple_body.decode('utf8', 'xmlcharrefreplace')
+        simple_body = simple_body.decode('utf8', 'xmlcharrefreplace')
         return 'Response: %s\n%s\n%s' % (
             self.status,
             '\n'.join(['%s: %s' % (n, v) for n, v in self.headers]),
@@ -884,7 +885,7 @@ class TestResponse(object):
         webbrowser.open_new(url)
 
 
-class TestRequest(object):
+class TestRequest:
 
     __test__ = False  # Ignore with pytest test collection.
 
@@ -921,7 +922,7 @@ class TestRequest(object):
         self.expect_errors = expect_errors
 
 
-class Form(object):
+class Form:
 
     """
     This object represents a form that has been found in a page.
@@ -1085,13 +1086,13 @@ class Form(object):
             field = fields[index]
             field.value = value
 
-    def get(self, name, index=None, default=NoDefault):
+    def get(self, name, index=None, default=NO_DEFAULT):
         """
         Get the named/indexed field object, or ``default`` if no field
         is found.
         """
         fields = self.fields.get(name)
-        if fields is None and default is not NoDefault:
+        if fields is None and default is not NO_DEFAULT:
             return default
         if index is None:
             return self[name]
@@ -1156,7 +1157,7 @@ def _parse_attrs(text):
         attrs[attr_name] = attr_body
     return attrs
 
-class Field(object):
+class Field:
 
     """
     Field object.
@@ -1325,7 +1326,7 @@ Field.classes['image'] = Submit
 ############################################################
 
 
-class TestFileEnvironment(object):
+class TestFileEnvironment:
 
     """
     This represents an environment in which files will be written, and
@@ -1517,7 +1518,7 @@ class TestFileEnvironment(object):
         f.close()
         return FoundFile(self.base_path, path)
 
-class ProcResult(object):
+class ProcResult:
 
     """
     Represents the results of running a command in
@@ -1596,7 +1597,7 @@ class ProcResult(object):
                     s.append(t)
         return '\n'.join(s)
 
-class FoundFile(object):
+class FoundFile:
 
     """
     Represents a single file found as the result of a command.
@@ -1656,7 +1657,7 @@ class FoundFile(object):
             self.__class__.__name__,
             self.base_path, self.path)
 
-class FoundDir(object):
+class FoundDir:
 
     """
     Represents a directory created by a command.
@@ -1713,7 +1714,7 @@ def _space_prefix(pref, full, sep=None, indent=None, include_sep=True):
 def _make_pattern(pat):
     if pat is None:
         return None
-    if isinstance(pat, (six.binary_type, six.text_type)):
+    if isinstance(pat, (bytes, str)):
         pat = re.compile(pat)
     if hasattr(pat, 'search'):
         return pat.search
@@ -1740,7 +1741,7 @@ def setup_module(module=None):
     if module is None:
         # The module we were called from must be the module...
         module = sys._getframe().f_back.f_globals['__name__']
-    if isinstance(module, (six.binary_type, six.text_type)):
+    if isinstance(module, (bytes, str)):
         module = sys.modules[module]
     if hasattr(module, 'reset_state'):
         module.reset_state()

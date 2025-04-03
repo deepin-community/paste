@@ -7,15 +7,14 @@ Formatters for the exception data that comes from ExceptionCollector.
 # @@: TODO:
 # Use this: http://www.zope.org/Members/tino/VisualTraceback/VisualTracebackNews
 
-import six
 import re
-from paste.util import html
+import html
 from paste.util import PySourceColor
 
 def html_quote(s):
     return html.escape(str(s), True)
 
-class AbstractFormatter(object):
+class AbstractFormatter:
 
     general_data_order = ['object', 'source_url']
 
@@ -77,7 +76,7 @@ class AbstractFormatter(object):
                 lines.append(self.format_long_source(
                     source, long_source))
         etype = exc_data.exception_type
-        if not isinstance(etype, six.string_types):
+        if not isinstance(etype, str):
             etype = etype.__name__
         exc_info = self.format_exception_info(
             etype,
@@ -482,7 +481,7 @@ def str2html(src, strip=False, indent_subsequent=0,
         return _str2html(src, strip=strip,
                          indent_subsequent=indent_subsequent,
                          highlight_inner=highlight_inner)
-    except:
+    except Exception:
         return html_quote(src)
 
 def _str2html(src, strip=False, indent_subsequent=0,
@@ -496,7 +495,7 @@ def _str2html(src, strip=False, indent_subsequent=0,
         src = pre_re.sub('', src)
         src = re.sub(r'^[\n\r]{0,1}', '', src)
         src = re.sub(r'[\n\r]{0,1}$', '', src)
-    except:
+    except Exception:
         src = html_quote(orig_src)
     lines = src.splitlines()
     if len(lines) == 1:

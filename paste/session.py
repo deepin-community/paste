@@ -23,17 +23,11 @@ session for each request, with no caching.  Also, sessions aren't
 expired.
 """
 
-try:
-    # Python 3
-    from http.cookies import SimpleCookie
-except ImportError:
-    # Python 2
-    from Cookie import SimpleCookie
+from http.cookies import SimpleCookie
 import time
 import random
 import os
 import datetime
-import six
 import threading
 import tempfile
 
@@ -45,10 +39,10 @@ try:
     from hashlib import md5
 except ImportError:
     from md5 import md5
-from paste import wsgilib
-from paste import request
+from paste import request, wsgilib
+from paste.util import NO_DEFAULT
 
-class SessionMiddleware(object):
+class SessionMiddleware:
 
     def __init__(self, application, global_conf=None, **factory_kw):
         self.application = application
@@ -82,7 +76,7 @@ class SessionMiddleware(object):
         return wsgilib.add_start_close(app_iter, start, close)
 
 
-class SessionFactory(object):
+class SessionFactory:
 
 
     def __init__(self, environ, cookie_name='_SID_',
@@ -149,8 +143,7 @@ class SessionFactory(object):
         if for_object is not None:
             r.append(id(for_object))
         content = str(r)
-        if six.PY3:
-            content = content.encode('utf8')
+        content = content.encode('utf8')
         md5_hash = md5(content)
         try:
             return md5_hash.hexdigest()
@@ -182,13 +175,13 @@ last_cleanup = None
 cleaning_up = False
 cleanup_cycle = datetime.timedelta(seconds=15*60) #15 min
 
-class FileSession(object):
+class FileSession:
 
     def __init__(self, sid, create=False, session_file_path=tempfile.gettempdir(),
                  chmod=None,
                  expiration=2880, # in minutes: 48 hours
                  ):
-        if chmod and isinstance(chmod, (six.binary_type, six.text_type)):
+        if chmod and isinstance(chmod, (bytes, str)):
             chmod = int(chmod, 8)
         self.chmod = chmod
         if not sid:
@@ -279,25 +272,21 @@ class FileSession(object):
                     last_cleanup = now
                     t = threading.Thread(target=self._clean_up)
                     t.start()
-                except:
+                except Exception:
                     # Normally _clean_up should set cleaning_up
                     # to false, but if something goes wrong starting
                     # it...
                     cleaning_up = False
                     raise
 
-class _NoDefault(object):
-    def __repr__(self):
-        return '<dynamic default>'
-NoDefault = _NoDefault()
 
 def make_session_middleware(
     app, global_conf,
-    session_expiration=NoDefault,
-    expiration=NoDefault,
-    cookie_name=NoDefault,
-    session_file_path=NoDefault,
-    chmod=NoDefault):
+    session_expiration=NO_DEFAULT,
+    expiration=NO_DEFAULT,
+    cookie_name=NO_DEFAULT,
+    session_file_path=NO_DEFAULT,
+    chmod=NO_DEFAULT):
     """
     Adds a middleware that handles sessions for your applications.
     The session is a peristent dictionary.  To get this dictionary
@@ -328,17 +317,17 @@ def make_session_middleware(
     Each of these also takes from the global configuration.  cookie_name
     and chmod take from session_cookie_name and session_chmod
     """
-    if session_expiration is NoDefault:
+    if session_expiration is NO_DEFAULT:
         session_expiration = global_conf.get('session_expiration', 60*12)
     session_expiration = int(session_expiration)
-    if expiration is NoDefault:
+    if expiration is NO_DEFAULT:
         expiration = global_conf.get('expiration', 60*48)
     expiration = int(expiration)
-    if cookie_name is NoDefault:
+    if cookie_name is NO_DEFAULT:
         cookie_name = global_conf.get('session_cookie_name', '_SID_')
-    if session_file_path is NoDefault:
+    if session_file_path is NO_DEFAULT:
         session_file_path = global_conf.get('session_file_path', '/tmp')
-    if chmod is NoDefault:
+    if chmod is NO_DEFAULT:
         chmod = global_conf.get('session_chmod', None)
     return SessionMiddleware(
         app, session_expiration=session_expiration,

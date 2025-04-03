@@ -55,16 +55,15 @@ login.
 
 __all__ = ['AuthOpenIDHandler']
 
-import cgi
+import html
 import urlparse
 import re
-import six
 
 import paste.request
 from paste import httpexceptions
 
 def quoteattr(s):
-    qs = cgi.escape(s, 1)
+    qs = html.escape(s)
     return '"%s"' % (qs,)
 
 # You may need to manually add the openid package into your
@@ -77,7 +76,7 @@ from openid.store import filestore
 from openid.consumer import consumer
 from openid.oidutil import appendArgs
 
-class AuthOpenIDHandler(object):
+class AuthOpenIDHandler:
     """
     This middleware implements OpenID Consumer behavior to authenticate a
     URL against an OpenID Server.
@@ -201,7 +200,7 @@ class AuthOpenIDHandler(object):
             else:
                 fmt = 'Could not find OpenID information in <q>%s</q>'
 
-            message = fmt % (cgi.escape(openid_url),)
+            message = fmt % (html.escape(openid_url),)
             return self.render(request, message, css_class='error', form_contents=openid_url)
         elif status == consumer.SUCCESS:
             # The URL was a valid identity URL. Now we construct a URL
@@ -246,7 +245,7 @@ class AuthOpenIDHandler(object):
             # message to help the user figure out what happened.
             openid_url = info
             fmt = "Verification of %s failed."
-            message = fmt % (cgi.escape(openid_url),)
+            message = fmt % (html.escape(openid_url),)
         elif status == consumer.SUCCESS:
             # Success means that the transaction completed without
             # error. If info is None, it means that the user cancelled
@@ -267,7 +266,7 @@ class AuthOpenIDHandler(object):
                     fmt = ("If you had supplied a login redirect path, you would have "
                            "been redirected there.  "
                            "You have successfully verified %s as your identity.")
-                    message = fmt % (cgi.escape(openid_url),)
+                    message = fmt % (html.escape(openid_url),)
                 else:
                     # @@: This stuff doesn't make sense to me; why not a remote redirect?
                     request['environ']['paste.auth.open_id'] = openid_url
@@ -399,7 +398,7 @@ def make_open_id_middleware(
     from paste.deploy.converters import asbool
     from paste.util import import_string
     catch_401 = asbool(catch_401)
-    if url_to_username and isinstance(url_to_username, six.string_types):
+    if url_to_username and isinstance(url_to_username, str):
         url_to_username = import_string.eval_import(url_to_username)
     apply_auth_tkt = asbool(apply_auth_tkt)
     new_app = AuthOpenIDHandler(

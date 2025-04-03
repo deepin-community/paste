@@ -40,7 +40,6 @@ Then every time the reloader polls files it will call
 ``watch_config_files`` and check all the filenames it returns.
 """
 
-from __future__ import print_function
 import os
 import sys
 import time
@@ -59,10 +58,10 @@ def install(poll_interval=1):
     """
     mon = Monitor(poll_interval=poll_interval)
     t = threading.Thread(target=mon.periodic_reload)
-    t.setDaemon(True)
+    t.daemon = True
     t.start()
 
-class Monitor(object):
+class Monitor:
 
     instances = []
     global_extra_files = []
@@ -93,7 +92,7 @@ class Monitor(object):
         for file_callback in self.file_callbacks:
             try:
                 filenames.extend(file_callback())
-            except:
+            except Exception:
                 print("Error calling paste.reloader callback %r:" % file_callback,
                       file=sys.stderr)
                 traceback.print_exc()

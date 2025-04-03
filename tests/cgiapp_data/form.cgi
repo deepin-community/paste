@@ -1,69 +1,68 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-
-import cgi
-import six
-
 print('Content-type: text/plain')
 print('')
 
-if six.PY3:
-    # Python 3: cgi.FieldStorage keeps some field names as unicode and some as
-    # the repr() of byte strings, duh.
+import sys
+import warnings
+from os.path import dirname
 
-    class FieldStorage(cgi.FieldStorage):
+base_dir = dirname(dirname(dirname(__file__)))
+sys.path.insert(0, base_dir)
 
-        def _key_candidates(self, key):
-            yield key
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+    try:
+        import pkg_resources
+    except ImportError:
+        # Ignore
+        pass
 
+from paste.util.field_storage import FieldStorage
+
+class FormFieldStorage(FieldStorage):
+
+    def _key_candidates(self, key):
+        yield key
+
+        try:
+            # assume bytes, coerce to str
             try:
-                # assume bytes, coerce to str
-                try:
-                    yield key.decode(self.encoding)
-                except UnicodeDecodeError:
-                    pass
-            except AttributeError:
-                # assume str, coerce to bytes
-                try:
-                    yield key.encode(self.encoding)
-                except UnicodeEncodeError:
-                    pass
+                yield key.decode(self.encoding)
+            except UnicodeDecodeError:
+                pass
+        except AttributeError:
+            # assume str, coerce to bytes
+            try:
+                yield key.encode(self.encoding)
+            except UnicodeEncodeError:
+                pass
 
-        def __getitem__(self, key):
+    def __getitem__(self, key):
+        error = None
 
-            superobj = super(FieldStorage, self)
+        for candidate in self._key_candidates(key):
+            if isinstance(candidate, bytes):
+                # ouch
+                candidate = repr(candidate)
+            try:
+                return super().__getitem__(candidate)
+            except KeyError as e:
+                if error is None:
+                    error = e
 
-            error = None
+        # fall through, re-raise the first KeyError
+        raise error
 
-            for candidate in self._key_candidates(key):
-                if isinstance(candidate, bytes):
-                    # ouch
-                    candidate = repr(candidate)
-                try:
-                    return superobj.__getitem__(candidate)
-                except KeyError as e:
-                    if error is None:
-                        error = e
-
-            # fall through, re-raise the first KeyError
-            raise error
-
-        def __contains__(self, key):
-            superobj = super(FieldStorage, self)
-
-            for candidate in self._key_candidates(key):
-                if superobj.__contains__(candidate):
-                    return True
-            return False
-
-else: # PY2
-
-    FieldStorage = cgi.FieldStorage
+    def __contains__(self, key):
+        for candidate in self._key_candidates(key):
+            if super().__contains__(candidate):
+                return True
+        return False
 
 
-form = FieldStorage()
+form = FormFieldStorage()
 
-print('Filename: %s' % form['up'].filename)
-print('Name: %s' % form['name'].value)
-print('Content: %s' % form['up'].file.read())
+print('Filename:', form['up'].filename)
+print('Name:', form['name'].value)
+print('Content:', form['up'].file.read())

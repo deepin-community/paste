@@ -11,11 +11,10 @@ URL where the content can be displayed to the user as an error document.
 
 import warnings
 import sys
-from six.moves.urllib import parse as urlparse
+from urllib import parse as urlparse
 from paste.recursive import ForwardRequestException, RecursiveMiddleware, RecursionLoop
 from paste.util import converters
 from paste.response import replace_header
-import six
 
 def forward(app, codes):
     """
@@ -61,7 +60,7 @@ def forward(app, codes):
         )
     )
 
-class StatusKeeper(object):
+class StatusKeeper:
     def __init__(self, app, status, url, headers):
         self.app = app
         self.status = status
@@ -91,12 +90,11 @@ class StatusKeeper(object):
             keep_status_start_response('500 Server Error', [('Content-type', 'text/plain')], sys.exc_info())
             body = ('Error: %s.  (Error page could not be fetched)'
                     % self.status)
-            if six.PY3:
-                body = body.encode('utf8')
+            body = body.encode('utf8')
             return [body]
 
 
-class StatusBasedForward(object):
+class StatusBasedForward:
     """
     Middleware that lets you test a response against a custom mapper object to
     programatically determine whether to internally forward to another URL and
@@ -184,7 +182,7 @@ class StatusBasedForward(object):
                 self.global_conf,
                 **self.params
             )
-            if not (new_url == None or isinstance(new_url, str)):
+            if not (new_url is None or isinstance(new_url, str)):
                 raise TypeError(
                     'Expected the url to internally '
                     'redirect to in the StatusBasedForward mapper'
@@ -256,7 +254,7 @@ def custom_forward(app, mapper, global_conf=None, **kw):
         global_conf = {}
     return _StatusBasedRedirect(app, mapper, global_conf, **kw)
 
-class _StatusBasedRedirect(object):
+class _StatusBasedRedirect:
     """
     Deprectated; use StatusBasedForward instead.
     """
@@ -313,7 +311,7 @@ class _StatusBasedRedirect(object):
                     self.global_conf,
                     self.kw
                 )
-                if not (new_url == None or isinstance(new_url, str)):
+                if not (new_url is None or isinstance(new_url, str)):
                     raise TypeError(
                         'Expected the url to internally '
                         'redirect to in the _StatusBasedRedirect error_mapper'
@@ -324,15 +322,15 @@ class _StatusBasedRedirect(object):
                 code_message.append([code, message])
                 return start_response(status, headers, exc_info)
             app_iter = self.application(environ, change_response)
-        except:
+        except Exception:
             try:
                 import sys
                 error = str(sys.exc_info()[1])
-            except:
+            except Exception:
                 error = ''
             try:
                 code, message = code_message[0]
-            except:
+            except Exception:
                 code, message = ['', '']
             environ['wsgi.errors'].write(
                 'Error occurred in _StatusBasedRedirect '

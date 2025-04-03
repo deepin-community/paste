@@ -3,6 +3,17 @@
 Patches are accepted to keep it on life support, but for the most part, please
 consider using other options.*
 
+**As of release 3.7.0 Paste no longer supports Python 2. If you are
+required to continue using Python 2 please pin an earlier version of Paste.**
+
+**With version 3.10.0 Paste development moves to the pasteorg GitHub
+organization and will be going deeper into maintenance mode unless
+more active maintainers step forward to take over. "Deeper" in this
+case means that releases will be much less frequent and patches
+will only be accepted for security issues or major problems. Current
+consumers of Paste should prepare to migrate away to more modern
+solutions.**
+
 Paste provides several pieces of "middleware" (or filters) that can be nested
 to build web applications.  Each piece of middleware uses the WSGI (`PEP 333`_)
 interface, and should be compatible with other middleware based on those
@@ -11,7 +22,7 @@ interfaces.
 .. _PEP 333: http://www.python.org/dev/peps/pep-0333/
 
 * `Paste project at GitHub (source code, bug tracker)
-  <https://github.com/cdent/paste/>`_
+  <https://github.com/pasteorg/paste/>`_
 * `Paste on the Python Cheeseshop (PyPI)
   <https://pypi.python.org/pypi/Paste>`_
 * `Paste on Read the Docs
@@ -81,9 +92,7 @@ Debugging Filters
 * Catch (optionally email) errors with extended tracebacks (using
   Zope/ZPT conventions) in ``paste.exceptions``
 
-* Catch errors presenting a `cgitb
-  <http://docs.python.org/2/library/cgitb.html>`_-based
-  output, in ``paste.cgitb_catcher``.
+* Catch errors presenting traceback in ``paste.cgitb_catcher``.
 
 * Profile each request and append profiling information to the HTML,
   in ``paste.debug.profile``
@@ -105,4 +114,4 @@ Other Tools
 * A class for generating and traversing URLs, and creating associated
   HTML code, in ``paste.url``
 
-The official development repo is at https://github.com/cdent/paste.
+The official development repo is at https://github.com/pasteorg/paste.

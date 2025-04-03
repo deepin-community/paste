@@ -1,13 +1,10 @@
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 
-import six
+import html
+import html.entities
 import re
-from six.moves import html_entities
-from six.moves.urllib.parse import quote, unquote
-
-from paste.util import html
-
+from urllib.parse import quote, unquote
 
 __all__ = ['html_quote', 'html_unquote', 'url_quote', 'url_unquote',
            'strip_html']
@@ -22,27 +19,18 @@ def html_quote(v, encoding=None):
     encoding = encoding or default_encoding
     if v is None:
         return ''
-    elif isinstance(v, six.binary_type):
-        if six.PY3:
-            return html.escape(v.decode(encoding), 1).encode(encoding)
-        else:
-            return html.escape(v, 1)
-    elif isinstance(v, six.text_type):
-        if six.PY3:
-            return html.escape(v, 1)
-        else:
-            return html.escape(v.encode(encoding), 1)
+    elif isinstance(v, bytes):
+        return html.escape(v.decode(encoding), 1).encode(encoding)
+    elif isinstance(v, str):
+        return html.escape(v, 1)
     else:
-        if six.PY3:
-            return html.escape(six.text_type(v), 1)
-        else:
-            return html.escape(six.text_type(v).encode(encoding), 1)
+        return html.escape(str(v), 1)
 
 _unquote_re = re.compile(r'&([a-zA-Z]+);')
-def _entity_subber(match, name2c=html_entities.name2codepoint):
+def _entity_subber(match, name2c=html.entities.name2codepoint):
     code = name2c.get(match.group(1))
     if code:
-        return six.unichr(code)
+        return chr(code)
     else:
         return match.group(0)
 
@@ -51,7 +39,7 @@ def html_unquote(s, encoding=None):
     Decode the value.
 
     """
-    if isinstance(s, six.binary_type):
+    if isinstance(s, bytes):
         s = s.decode(encoding or default_encoding)
     return _unquote_re.sub(_entity_subber, s)
 

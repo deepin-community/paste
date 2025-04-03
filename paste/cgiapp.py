@@ -7,16 +7,21 @@ Application that runs a CGI script.
 import os
 import sys
 import subprocess
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 try:
     import select
 except ImportError:
     select = None
-import six
 
 from paste.util import converters
 
 __all__ = ['CGIError', 'CGIApplication']
+
+def ensure_text(s, encoding='utf-8', errors='strict'):
+    if type(s) is str:
+        return s
+    else:
+        return s.decode(encoding, errors)
 
 class CGIError(Exception):
     """
@@ -24,7 +29,7 @@ class CGIError(Exception):
     act like a proper CGI script.
     """
 
-class CGIApplication(object):
+class CGIApplication:
 
     """
     This object acts as a proxy to a CGI application.  You pass in the
@@ -40,7 +45,7 @@ class CGIApplication(object):
                  include_os_environ=True,
                  query_string=None):
         if global_conf:
-            raise NotImplemented(
+            raise NotImplementedError(
                 "global_conf is no longer supported for CGIApplication "
                 "(use make_cgi_application); please pass None instead")
         self.script_filename = script
@@ -111,7 +116,7 @@ class CGIApplication(object):
             start_response(writer.status, writer.headers)
         return []
 
-class CGIWriter(object):
+class CGIWriter:
 
     def __init__(self, environ, start_response):
         self.environ = environ
@@ -148,9 +153,8 @@ class CGIWriter(object):
                 name, value = line1.split(b':', 1)
                 value = value.lstrip()
                 name = name.strip()
-                if six.PY3:
-                    name = name.decode('utf8')
-                    value = value.decode('utf8')
+                name = name.decode('utf8')
+                value = value.decode('utf8')
                 if name.lower() == 'status':
                     if ' ' not in value:
                         # WSGI requires this space, sometimes CGI scripts don't set it:
@@ -159,7 +163,7 @@ class CGIWriter(object):
                 else:
                     self.headers.append((name, value))
 
-class StdinReader(object):
+class StdinReader:
 
     def __init__(self, stdin, content_length):
         self.stdin = stdin
@@ -253,7 +257,7 @@ def proc_communicate(proc, stdin=None, stdout=None, stderr=None):
                 read_set.remove(proc.stderr)
             if trans_nl:
                 data = proc._translate_newlines(data)
-            stderr.write(six.ensure_text(data))
+            stderr.write(ensure_text(data))
 
     try:
         proc.wait()

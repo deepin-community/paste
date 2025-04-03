@@ -1,4 +1,4 @@
-from paste.fixture import *
+from paste.fixture import TestApp
 from paste.cgitb_catcher import CgitbMiddleware
 from paste import lint
 from .test_exceptions.test_error_middleware import clear_middleware
@@ -46,10 +46,7 @@ def yielder(args):
 def test_makes_exception():
     res = do_request(bad_app)
     print(res)
-    if six.PY3:
-        assert 'bad_app() takes 0 positional arguments but 2 were given' in res
-    else:
-        assert 'bad_app() takes no arguments (2 given' in res
+    assert 'bad_app() takes 0 positional arguments but 2 were given' in res
     assert 'iterator = application(environ, start_response_wrapper)' in res
     assert 'lint.py' in res
     assert 'cgitb_catcher.py' in res

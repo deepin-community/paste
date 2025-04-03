@@ -17,21 +17,19 @@ if pyOpenSSL is installed, it also provides SSL capabilities.
 # @@: add support for chunked encoding, this is not a 1.1 server
 #     till this is completed.
 
-from __future__ import print_function
 import atexit
 import traceback
 import io
 import socket, sys, threading
 import posixpath
-import six
 import time
 import os
 from itertools import count
-from six.moves import _thread
-from six.moves import queue
-from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from six.moves.socketserver import ThreadingMixIn
-from six.moves.urllib.parse import unquote, urlsplit
+import _thread
+import queue
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
+from urllib.parse import unquote, urlsplit
 from paste.util import converters
 import logging
 try:
@@ -56,7 +54,7 @@ def _get_headers(headers, k):
         return headers.getheaders(k)  # Python 2 - mimetools.Message
 
 
-class ContinueHook(object):
+class ContinueHook:
     """
     When a client request includes a 'Expect: 100-continue' header, then
     it is the responsibility of the server to send 100 Continue when it
@@ -171,7 +169,7 @@ class WSGIHandlerMixin:
         if exc_info:
             try:
                 if self.wsgi_headers_sent:
-                    six.reraise(exc_info[0], exc_info[1], exc_info[2])
+                    raise exc_info
                 else:
                     # In this case, we're going to assume that the
                     # higher-level code is currently handling the
@@ -315,7 +313,7 @@ class WSGIHandlerMixin:
         except socket.error as exce:
             self.wsgi_connection_drop(exce, environ)
             return
-        except:
+        except Exception:
             if not self.wsgi_headers_sent:
                 error_msg = "Internal Server Error\n"
                 self.wsgi_curr_headers = (
@@ -348,12 +346,12 @@ except ImportError:
                 self.socket.listen(request_queue_size)
 else:
 
-    class _ConnFixer(object):
+    class _ConnFixer:
         """ wraps a socket connection so it implements makefile """
         def __init__(self, conn):
             self.__conn = conn
         def makefile(self, mode, bufsize):
-            return socket._fileobject(self.__conn, mode, bufsize)
+            return socket.SocketIO(self.__conn, mode)
         def __getattr__(self, attrib):
             return getattr(self.__conn, attrib)
 
@@ -468,7 +466,7 @@ class WSGIHandler(WSGIHandlerMixin, BaseHTTPRequestHandler):
         """
         return ''
 
-class LimitedLengthFile(object):
+class LimitedLengthFile:
     def __init__(self, file, length):
         self.file = file
         self.length = length
@@ -530,7 +528,7 @@ class LimitedLengthFile(object):
                 pass
         return self._consumed
 
-class ThreadPool(object):
+class ThreadPool:
     """
     Generic thread pool with a queue of callables to consume.
 
@@ -602,7 +600,7 @@ class ThreadPool(object):
         self.daemon = daemon
         if logger is None:
             logger = logging.getLogger('paste.httpserver.ThreadPool')
-        if isinstance(logger, six.string_types):
+        if isinstance(logger, str):
             logger = logging.getLogger(logger)
         self.logger = logger
         self.error_email = error_email
@@ -760,11 +758,11 @@ class ThreadPool(object):
         return thread_id in threading._active
 
     def add_worker_thread(self, *args, **kwargs):
-        index = six.next(self._worker_count)
+        index = next(self._worker_count)
         worker = threading.Thread(target=self.worker_thread_callback,
                                   args=args, kwargs=kwargs,
                                   name=("worker %d" % index))
-        worker.setDaemon(self.daemon)
+        worker.daemon = self.daemon
         worker.start()
 
     def kill_hung_threads(self):
@@ -802,8 +800,8 @@ class ThreadPool(object):
                 try:
                     import pprint
                     info_desc = pprint.pformat(info)
-                except:
-                    out = six.StringIO()
+                except Exception:
+                    out = io.StringIO()
                     traceback.print_exc(file=out)
                     info_desc = 'Error:\n%s' % out.getvalue()
                 self.notify_problem(
@@ -865,7 +863,7 @@ class ThreadPool(object):
                        ids="\n  ".join(map(str, found))),
                 subject="Process restart (too many zombie threads)")
             self.shutdown(10)
-            print('Shutting down', threading.currentThread())
+            print('Shutting down', threading.current_thread())
             raise ServerExit(3)
 
     def worker_thread_callback(self, message=None):
@@ -873,7 +871,7 @@ class ThreadPool(object):
         Worker thread should call this method to get and process queued
         callables.
         """
-        thread_obj = threading.currentThread()
+        thread_obj = threading.current_thread()
         thread_id = thread_obj.thread_id = _thread.get_ident()
         self.workers.append(thread_obj)
         self.idle_workers.append(thread_id)
@@ -901,7 +899,7 @@ class ThreadPool(object):
                 try:
                     try:
                         runnable()
-                    except:
+                    except Exception:
                         # We are later going to call sys.exc_clear(),
                         # removing all remnants of any exception, so
                         # we should log it now.  But ideally no
@@ -917,8 +915,6 @@ class ThreadPool(object):
                         del self.worker_tracker[thread_id]
                     except KeyError:
                         pass
-                    if six.PY2:
-                        sys.exc_clear()
                 self.idle_workers.append(thread_id)
         finally:
             try:
@@ -1022,7 +1018,7 @@ class ThreadPool(object):
             ]
         try:
             system = ' '.join(os.uname())
-        except:
+        except Exception:
             system = '(unknown)'
         body = (
             "An error has occurred in the paste.httpserver.ThreadPool\n"
@@ -1048,7 +1044,7 @@ class ThreadPool(object):
         server.quit()
         print('email sent to', error_emails, message)
 
-class ThreadPoolMixIn(object):
+class ThreadPoolMixIn:
     """
     Mix-in class to process requests from a thread pool
     """

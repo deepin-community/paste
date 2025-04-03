@@ -8,13 +8,7 @@ to deal with an incoming request and sending a response.
 import re
 import warnings
 from pprint import pformat
-try:
-    # Python 3
-    from http.cookies import SimpleCookie
-except ImportError:
-    # Python 2
-    from Cookie import SimpleCookie
-import six
+from http.cookies import SimpleCookie
 
 from paste.request import EnvironHeaders, get_cookie_dict, \
     parse_dict_querystring, parse_formvars
@@ -40,7 +34,7 @@ class DeprecatedSettings(StackedObjectProxy):
 # settings is deprecated: use WSGIResponse.defaults instead
 settings = DeprecatedSettings(default=dict())
 
-class environ_getter(object):
+class environ_getter:
     """For delegating an attribute to a key in self.environ."""
     # @@: Also __set__?  Should setting be allowed?
     def __init__(self, key, default='', default_factory=None):
@@ -61,7 +55,7 @@ class environ_getter(object):
     def __repr__(self):
         return '<Proxy for WSGI environ %r key>' % self.key
 
-class WSGIRequest(object):
+class WSGIRequest:
     """WSGI Request API Object
 
     This object represents a WSGI request with a more friendly interface.
@@ -293,7 +287,7 @@ class WSGIRequest(object):
         msg += '\ncookies=%s>' % pf(self.cookies)
         return msg
 
-class WSGIResponse(object):
+class WSGIResponse:
     """A basic HTTP response with content, headers, and out-bound cookies
 
     The class variable ``defaults`` specifies default values for
@@ -411,7 +405,7 @@ class WSGIResponse(object):
         self.cookies[key]['max-age'] = 0
 
     def _set_content(self, content):
-        if not isinstance(content, (six.binary_type, six.text_type)):
+        if not isinstance(content, (bytes, str)):
             self._iter = content
             if isinstance(content, list):
                 self._is_str_iter = True

@@ -1,7 +1,12 @@
 import os
-from paste.urlparser import *
-from paste.fixture import *
-from pkg_resources import get_distribution
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+    from pkg_resources import get_distribution
+
+from paste.fixture import TestApp
+from paste.urlparser import PkgResourcesParser, StaticURLParser, URLParser
 
 def relative_path(name):
     here = os.path.join(os.path.dirname(os.path.abspath(__file__)),

@@ -1,3 +1,107 @@
+paste (3.10.1-1) unstable; urgency=medium
+
+  * New upstream version 3.10.1
+
+ -- Alexandre Detiste <tchet@debian.org>  Sun, 15 Sep 2024 14:53:10 +0200
+
+paste (3.10.0-1) unstable; urgency=medium
+
+  * New upstream version 3.10.0
+  * Fix URL's new project ownership
+  * Add license for vendored part of stdlib
+  * Refresh patches
+
+ -- Alexandre Detiste <tchet@debian.org>  Sat, 27 Apr 2024 14:25:35 +0200
+
+paste (3.9.0-1) unstable; urgency=medium
+
+  * Adopt package inside Python Team
+  * New upstream version 3.9.0
+  * Remove python3-six dependency
+  * Fix field name typo in debian/copyright (Comments ⇒ Comment).
+
+  [ Ondřej Nový ]
+  * Remove myself from Uploaders.
+
+ -- Alexandre Detiste <tchet@debian.org>  Fri, 12 Apr 2024 00:58:45 +0200
+
+paste (3.8.0-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream version 3.8.0
+
+ -- Alexandre Detiste <tchet@debian.org>  Sat, 16 Mar 2024 16:13:17 +0100
+
+paste (3.7.1-1) unstable; urgency=medium
+
+  * Team upload
+  * d/watch: Add compression typ gz
+  * New upstream version 3.7.1
+  * Rebuild patch queue from patch-queue branch
+    Removed patch (test skipped now by upstream):
+    Skip-test-with-network-access.patch
+  * d/control: Update Standards-Version to 4.6.2
+    No further changes needed.
+
+ -- Carsten Schoenert <c.schoenert@t-online.de>  Fri, 20 Oct 2023 20:21:29 +0200
+
+paste (3.5.2+repack-1) unstable; urgency=medium
+
+  * Team upload
+  * d/watch: Remove repacksuffix, no need for it anymore
+  * d/gbp.conf: Remove the import-orig part
+  * d/gbp.conf: Set compression type to gzip
+  * New upstream version 3.5.2+repack
+    We need to use the suffix to produce a gretaer version than with the +dfsg
+    suffix. Cayn be dropped on the next new upstream version import.
+  * python3-paste: Drop Suggests on non existing packages
+    httpd-wsgi, libapache2-mod-scgi and libjs-mochikit aren't in the archive
+    so we can't suggest the usage of these packages.
+  * python3-paste: Don't link MochiKit JS file
+    (Closes: #946778, #985398)
+  * d/copyright: Add license information about MochiKit.packed.js
+  * Lintian: Add source related override
+
+ -- Carsten Schoenert <c.schoenert@t-online.de>  Fri, 18 Nov 2022 08:08:40 +0100
+
+paste (3.5.2+dfsg-1) unstable; urgency=medium
+
+  * Team upload
+
+  [ Debian Janitor ]
+  * Update standards version to 4.6.0, no changes needed.
+  * Update standards version to 4.6.1, no changes needed.
+
+  [ Carsten Schoenert ]
+  * d/gbp.conf: Add some basic default configuration
+  * d/watch: Switch to version 4, move to git mode
+  * New upstream version 3.5.2+dfsg
+  * Rebuild patch queue from patch-queue branch
+    Added patches:
+    tests-Ignore-potential-warnings-handled-as-errors.patch
+    tests-Use-FastForwardException-url.patch
+
+    Refreshing and renaming patch:
+    0002-Skip-test-with-network-access.patch
+    -> debian/patches/Skip-test-with-network-access.patch
+  * d/copyright: Update Source field
+  * d/rules: Adjust PYBUILD_AFTER_INSTALL settings
+  * d/control: Move over to dh-sequence-python3
+  * d/control: Set <!nocheck> to *pytest* package in B-D
+  * autopkgtest: Adding a basic first test setup
+
+ -- Carsten Schoenert <c.schoenert@t-online.de>  Thu, 17 Nov 2022 18:05:11 +0100
+
+paste (3.5.0+dfsg1-2) unstable; urgency=medium
+
+  * Apply multi-arch hints.
+    + python-paste-doc: Add Multi-Arch: foreign.
+  * Remove obsolete field Name from debian/upstream/metadata (already present in
+    machine-readable debian/copyright).
+  * Update standards version to 4.5.1, no changes needed.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Thu, 26 May 2022 16:59:29 +0100
+
 paste (3.5.0+dfsg1-1) unstable; urgency=medium
 
   * New upstream release.

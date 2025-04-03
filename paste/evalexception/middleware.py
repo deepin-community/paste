@@ -25,13 +25,11 @@ to see the full debuggable traceback.  Also, this URL is printed to
 ``wsgi.errors``, so you can open it up in another browser window.
 """
 
-from __future__ import print_function
-
+import html
 import sys
 import os
 import traceback
-import six
-from six.moves import cStringIO as StringIO
+from io import StringIO
 import pprint
 import itertools
 import time
@@ -44,9 +42,11 @@ from paste import registry
 from paste import request
 from paste import response
 from paste.evalexception import evalcontext
-from paste.util import html
 
 limit = 200
+
+def cmp(a, b):
+    return (a > b) - (a < b)
 
 def html_quote(v):
     """
@@ -84,7 +84,7 @@ def simplecatcher(application):
     def simplecatcher_app(environ, start_response):
         try:
             return application(environ, start_response)
-        except:
+        except Exception:
             out = StringIO()
             traceback.print_exc(file=out)
             start_response('500 Server Error',
@@ -163,10 +163,10 @@ def get_debug_count(environ):
     if 'paste.evalexception.debug_count' in environ:
         return environ['paste.evalexception.debug_count']
     else:
-        environ['paste.evalexception.debug_count'] = next = six.next(debug_counter)
-        return next
+        environ['paste.evalexception.debug_count'] = _next = next(debug_counter)
+        return _next
 
-class EvalException(object):
+class EvalException:
 
     def __init__(self, application, global_conf=None,
                  xmlhttp_key=None):
@@ -301,7 +301,7 @@ class EvalException(object):
         def detect_start_response(status, headers, exc_info=None):
             try:
                 return start_response(status, headers, exc_info)
-            except:
+            except Exception:
                 raise
             else:
                 started.append(True)
@@ -314,7 +314,7 @@ class EvalException(object):
             finally:
                 if hasattr(app_iter, 'close'):
                     app_iter.close()
-        except:
+        except Exception:
             exc_info = sys.exc_info()
             for expected in environ.get('paste.expected_exceptions', []):
                 if isinstance(exc_info[1], expected):
@@ -365,7 +365,7 @@ class EvalException(object):
             debug_mode=True,
             simple_html_error=simple_html_error)
 
-class DebugInfo(object):
+class DebugInfo:
 
     def __init__(self, counter, exc_info, exc_data, base_path,
                  environ, view_uri):
@@ -418,8 +418,7 @@ class DebugInfo(object):
             'repost_button': repost_button or '',
             'head_html': head_html,
             'body': html}
-        if six.PY3:
-            page = page.encode('utf8')
+        page = page.encode('utf8')
         return [page]
 
     def eval_javascript(self):

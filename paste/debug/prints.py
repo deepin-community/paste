@@ -17,32 +17,28 @@ necessary.
 
 """
 
-from cStringIO import StringIO
+from io import StringIO
 import re
-import cgi
+import html
 from paste.util import threadedprint
 from paste import wsgilib
 from paste import response
-import six
 import sys
 
 _threadedprint_installed = False
 
 __all__ = ['PrintDebugMiddleware']
 
-class TeeFile(object):
+class TeeFile:
 
     def __init__(self, files):
         self.files = files
 
     def write(self, v):
-        if isinstance(v, unicode):
-            # WSGI is picky in this case
-            v = str(v)
         for file in self.files:
             file.write(v)
 
-class PrintDebugMiddleware(object):
+class PrintDebugMiddleware:
 
     """
     This middleware captures all the printed statements, and inlines
@@ -72,7 +68,7 @@ class PrintDebugMiddleware(object):
         # the entry point
         self.app = app
         self.force_content_type = force_content_type
-        if isinstance(print_wsgi_errors, six.string_types):
+        if isinstance(print_wsgi_errors, str):
             from paste.deploy.converters import asbool
             print_wsgi_errors = asbool(print_wsgi_errors)
         self.print_wsgi_errors = print_wsgi_errors
@@ -136,7 +132,7 @@ class PrintDebugMiddleware(object):
     def add_log(self, html, log):
         if not log:
             return html
-        text = cgi.escape(log)
+        text = html.escape(log)
         text = text.replace('\n', '<br>')
         text = text.replace('  ', '&nbsp; ')
         match = self._explicit_re.search(html)

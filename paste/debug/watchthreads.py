@@ -3,10 +3,9 @@ Watches the key ``paste.httpserver.thread_pool`` to see how many
 threads there are and report on any wedged threads.
 """
 import sys
-import cgi
 import time
 import traceback
-from cStringIO import StringIO
+from io import StringIO
 from thread import get_ident
 from paste import httpexceptions
 from paste.request import construct_url, parse_formvars
@@ -169,7 +168,7 @@ page_template = HTMLTemplate('''
 </html>
 ''', name='watchthreads.page_template')
 
-class WatchThreads(object):
+class WatchThreads:
 
     """
     Application that watches the threads in ``paste.httpserver``,
@@ -273,29 +272,6 @@ def traceback_thread(thread_id):
     return out.getvalue()
 
 hide_keys = ['paste.httpserver.thread_pool']
-
-def format_environ(environ):
-    if environ is None:
-        return environ_template.substitute(
-            key='---',
-            value='No environment registered for this thread yet')
-    environ_rows = []
-    for key, value in sorted(environ.items()):
-        if key in hide_keys:
-            continue
-        try:
-            if key.upper() != key:
-                value = repr(value)
-            environ_rows.append(
-                environ_template.substitute(
-                key=cgi.escape(str(key)),
-                value=cgi.escape(str(value))))
-        except Exception as e:
-            environ_rows.append(
-                environ_template.substitute(
-                key=cgi.escape(str(key)),
-                value='Error in <code>repr()</code>: %s' % e))
-    return ''.join(environ_rows)
 
 def format_time(time_length):
     if time_length >= 60*60:

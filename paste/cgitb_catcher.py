@@ -4,35 +4,30 @@
 """
 WSGI middleware
 
-Captures any exceptions and prints a pretty report.  See the `cgitb
-documentation <http://python.org/doc/current/lib/module-cgitb.html>`_
-for more.
+Captures any exceptions and prints a pretty report.
 """
 
-import cgitb
-import six
-from six.moves import cStringIO as StringIO
+from io import StringIO
 import sys
 
-from paste.util import converters
+from paste.util import converters, NO_DEFAULT
+from paste.util.cgitb_hook import Hook
 
-class NoDefault(object):
-    pass
 
-class CgitbMiddleware(object):
+class CgitbMiddleware:
 
     def __init__(self, app,
                  global_conf=None,
-                 display=NoDefault,
+                 display=NO_DEFAULT,
                  logdir=None,
                  context=5,
                  format="html"):
         self.app = app
         if global_conf is None:
             global_conf = {}
-        if display is NoDefault:
+        if display is NO_DEFAULT:
             display = global_conf.get('debug')
-        if isinstance(display, six.string_types):
+        if isinstance(display, str):
             display = converters.asbool(display)
         self.display = display
         self.logdir = logdir
@@ -43,14 +38,13 @@ class CgitbMiddleware(object):
         try:
             app_iter = self.app(environ, start_response)
             return self.catching_iter(app_iter, environ)
-        except:
+        except Exception:
             exc_info = sys.exc_info()
             start_response('500 Internal Server Error',
                            [('content-type', 'text/html')],
                            exc_info)
             response = self.exception_handler(exc_info, environ)
-            if six.PY3:
-                response = response.encode('utf8')
+            response = response.encode('utf8')
             return [response]
 
     def catching_iter(self, app_iter, environ):
@@ -63,39 +57,40 @@ class CgitbMiddleware(object):
             if hasattr(app_iter, 'close'):
                 error_on_close = True
                 app_iter.close()
-        except:
+        except Exception:
             response = self.exception_handler(sys.exc_info(), environ)
             if not error_on_close and hasattr(app_iter, 'close'):
                 try:
                     app_iter.close()
-                except:
+                except Exception:
                     close_response = self.exception_handler(
                         sys.exc_info(), environ)
                     response += (
                         '<hr noshade>Error in .close():<br>%s'
                         % close_response)
-            if six.PY3:
-                response = response.encode('utf8')
+            response = response.encode('utf8')
             yield response
 
     def exception_handler(self, exc_info, environ):
         dummy_file = StringIO()
-        hook = cgitb.Hook(file=dummy_file,
-                          display=self.display,
-                          logdir=self.logdir,
-                          context=self.context,
-                          format=self.format)
+        hook = Hook(
+            file=dummy_file,
+            display=self.display,
+            logdir=self.logdir,
+            context=self.context,
+            format=self.format)
         hook(*exc_info)
         return dummy_file.getvalue()
 
+
 def make_cgitb_middleware(app, global_conf,
-                          display=NoDefault,
+                          display=NO_DEFAULT,
                           logdir=None,
                           context=5,
                           format='html'):
     """
-    Wraps the application in the ``cgitb`` (standard library)
-    error catcher.
+    Wraps the application in an error catcher based on the
+    former ``cgitb`` module in the standard library.
 
       display:
         If true (or debug is set in the global configuration)
@@ -109,7 +104,7 @@ def make_cgitb_middleware(app, global_conf,
         source code
     """
     from paste.deploy.converters import asbool
-    if display is not NoDefault:
+    if display is not NO_DEFAULT:
         display = asbool(display)
     if 'debug' in global_conf:
         global_conf['debug'] = asbool(global_conf['debug'])

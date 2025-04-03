@@ -1,6 +1,6 @@
-import six
+import io
 
-from paste.request import *
+from paste.request import parse_formvars, parse_querystring
 from paste.util.multidict import MultiDict
 
 def test_parse_querystring():
@@ -18,9 +18,17 @@ def make_post(body):
         'CONTENT_TYPE': 'application/x-www-form-urlencoded',
         'CONTENT_LENGTH': str(len(body)),
         'REQUEST_METHOD': 'POST',
-        'wsgi.input': six.BytesIO(body),
+        'wsgi.input': io.BytesIO(body),
         }
     return e
+
+def test_parse_formvars_nodup():
+    """GH85: Test that parse_formvars can be called twice."""
+    e = {'QUERY_STRING': 'a=1&b=2&c=3&b=4', 'wsgi.input': ""}
+    d1 = parse_formvars(e)
+    assert d1.getall("a") == ["1"]
+    d2 = parse_formvars(e)
+    assert d2.getall("a") == ["1"]
 
 def test_parsevars():
     e = make_post(b'a=1&b=2&c=3&b=4')
