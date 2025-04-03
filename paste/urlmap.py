@@ -4,15 +4,10 @@
 Map URL prefixes to WSGI applications.  See ``URLMap``
 """
 
+import html
 import re
 import os
-from paste.util import html
-try:
-    # Python 3
-    from collections.abc import MutableMapping as DictMixin
-except ImportError:
-    # Python 2
-    from UserDict import DictMixin
+from collections.abc import MutableMapping as DictMixin
 
 from paste import httpexceptions
 
@@ -218,7 +213,7 @@ class URLMap(DictMixin):
         return self.not_found_application(environ, start_response)
 
 
-class PathProxyURLMap(object):
+class PathProxyURLMap:
 
     """
     This is a wrapper for URLMap that catches any strings that
@@ -241,7 +236,7 @@ class PathProxyURLMap(object):
         self.builder = builder
 
     def __setitem__(self, url, app):
-        if isinstance(app, (str, unicode)):
+        if isinstance(app, str):
             app_fn = os.path.join(self.base_path, app)
             app = self.builder(app_fn)
         url = self.map.normalize_url(url)

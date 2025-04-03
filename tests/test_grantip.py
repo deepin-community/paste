@@ -1,7 +1,7 @@
 from paste.auth import grantip
-from paste.fixture import *
+from paste.fixture import TestApp
 
-def test_make_app():
+def _make_app():
     def application(environ, start_response):
         start_response('200 OK', [('content-type', 'text/plain')])
         lines = [
@@ -9,8 +9,7 @@ def test_make_app():
             ':',
             str(environ.get('REMOTE_USER_TOKENS')),
             ]
-        if six.PY3:
-            lines = [line.encode('utf8') for line in lines]
+        lines = [line.encode('utf8') for line in lines]
         return lines
     ip_map = {
         '127.0.0.1': (None, 'system'),
@@ -23,7 +22,7 @@ def test_make_app():
     return app
 
 def test_req():
-    app = test_make_app()
+    app = _make_app()
     def doit(remote_addr):
         res = app.get('/', extra_environ={'REMOTE_ADDR': remote_addr})
         return res.body

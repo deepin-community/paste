@@ -3,6 +3,74 @@ News
 
 .. contents::
 
+3.10.1
+------
+
+* Correct packaging and testing when not in a clean virtualenv.
+
+3.10.0
+------
+
+* Move development to https://github.com/pasteorg/paste
+* Vendor cgi.FieldStorage and cgitb.Hook
+* More cleaning of Python 2 style code.
+
+With version 3.10.0 Paste development moves to the pasteorg GitHub
+organization and will be going deeper into maintenance mode unless
+more active maintainers step forward to take over. "Deeper" in this
+case means that releases will be much less frequent and patches
+will only be accepted for security issues or major problems. Current
+consumers of Paste should prepare to migrate away to more modern
+solutions.
+
+3.9.0
+-----
+
+* Remove dead format_environ code in watchthread.py app.
+
+3.8.0
+-----
+
+* Remove remainder of Python 2 code. Thanks a-detiste.
+
+3.7.0
+-----
+
+* End Python 2 support.
+* Remove use of distutils.
+* Fix double query processing in parse_formvars.
+
+3.6.1
+-----
+
+* Tiny release to confirm release automation.
+
+3.6.0
+-----
+
+* Provide kwarg for timestamp format in Translogger.
+
+3.5.3
+-----
+
+* Use importlib instead of imp with Python 3.
+
+
+3.5.2
+-----
+
+* Additional fixes to next in iterators.
+
+Thanks to cjwatson.
+
+3.5.1
+-----
+
+* Replace deprecated threading.currentThread, getName and setDaemon
+  with threading.current_thread, name and daemon.
+
+Thanks to hugovk.
+
 3.5.0
 -----
 
@@ -161,7 +229,7 @@ Thanks to benjaminp for many recent contributions.
 
 * Remove use of future for sake of html.escape and use own. Using
   future was causing installation loops. See:
-  https://github.com/cdent/paste/issues/6
+  https://github.com/pasteorg/paste/issues/6
 
 3.0.0
 -----

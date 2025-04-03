@@ -1,6 +1,6 @@
 import sys
 import os
-from paste.exceptions.reporter import *
+from paste.exceptions.reporter import LogReporter
 from paste.exceptions import collector
 
 def setup_file(fn, content=None):
@@ -24,13 +24,13 @@ def test_logger():
         show_hidden_frames=False)
     try:
         int('a')
-    except:
+    except Exception:
         exc_data = collector.collect_exception(*sys.exc_info())
     else:
         assert 0
     rep.report(exc_data)
     content = open(fn).read()
-    assert len(content.splitlines()) == 4, len(content.splitlines())
+    assert len(content.splitlines()) == 4
     assert 'ValueError' in content
     assert 'int' in content
     assert 'test_reporter.py' in content
@@ -38,7 +38,7 @@ def test_logger():
 
     try:
         1 / 0
-    except:
+    except Exception:
         exc_data = collector.collect_exception(*sys.exc_info())
     else:
         assert 0

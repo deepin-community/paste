@@ -1,4 +1,4 @@
-"""WSGI Paste wrapper for mod_python. Requires Python 2.2 or greater.
+"""WSGI Paste wrapper for mod_python.
 
 
 Example httpd.conf section for a Paste app with an ini file::
@@ -49,16 +49,15 @@ This module highly based on Robert Brewer's, here:
 http://projects.amor.org/misc/svn/modpython_gateway.py
 """
 
-import six
 import traceback
 
 try:
     from mod_python import apache
-except:
-    pass
+except ImportError:
+    apache = None
 from paste.deploy import loadapp
 
-class InputWrapper(object):
+class InputWrapper:
 
     def __init__(self, req):
         self.req = req
@@ -84,7 +83,7 @@ class InputWrapper(object):
             line = self.readline()
 
 
-class ErrorWrapper(object):
+class ErrorWrapper:
 
     def __init__(self, req):
         self.req = req
@@ -103,7 +102,7 @@ bad_value = ("You must provide a PythonOption '%s', either 'on' or 'off', "
              "when running a version of mod_python < 3.1")
 
 
-class Handler(object):
+class Handler:
 
     def __init__(self, req):
         self.started = False
@@ -164,7 +163,7 @@ class Handler(object):
                 self.request.set_content_length(0)
             if hasattr(result, 'close'):
                 result.close()
-        except:
+        except Exception:
             traceback.print_exc(None, self.environ['wsgi.errors'])
             if not self.started:
                 self.request.status = 500
@@ -177,7 +176,7 @@ class Handler(object):
         if exc_info:
             try:
                 if self.started:
-                    six.reraise(exc_info[0], exc_info[1], exc_info[2])
+                    raise exc_info
             finally:
                 exc_info = None
 

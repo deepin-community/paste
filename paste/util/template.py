@@ -31,10 +31,9 @@ If there are syntax errors ``TemplateError`` will be raised.
 """
 
 import re
-import six
 import sys
 from html import escape
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 from paste.util.looper import looper
 
 __all__ = ['TemplateError', 'Template', 'sub', 'HTMLTemplate',
@@ -43,6 +42,17 @@ __all__ = ['TemplateError', 'Template', 'sub', 'HTMLTemplate',
 token_re = re.compile(r'\{\{|\}\}')
 in_re = re.compile(r'\s+in\s+')
 var_re = re.compile(r'^[a-z_][a-z0-9_]*$', re.I)
+
+def reraise(tp, value, tb=None):
+    try:
+        if value is None:
+            value = tp()
+        if value.__traceback__ is not tb:
+            raise value.with_traceback(tb)
+        raise value
+    finally:
+        value = None
+        tb = None
 
 class TemplateError(Exception):
     """Exception raised while parsing a template
@@ -66,7 +76,7 @@ class _TemplateContinue(Exception):
 class _TemplateBreak(Exception):
     pass
 
-class Template(object):
+class Template:
 
     default_namespace = {
         'start_braces': '{{',
@@ -78,7 +88,7 @@ class Template(object):
 
     def __init__(self, content, name=None, namespace=None):
         self.content = content
-        self._unicode = isinstance(content, six.text_type)
+        self._unicode = isinstance(content, str)
         self.name = name
         self._parsed = parse(content, name=name)
         if namespace is None:
@@ -124,7 +134,7 @@ class Template(object):
     def _interpret_codes(self, codes, ns, out):
         __traceback_hide__ = True
         for item in codes:
-            if isinstance(item, six.string_types):
+            if isinstance(item, str):
                 out.append(item)
             else:
                 self._interpret_code(item, ns, out)
@@ -185,7 +195,7 @@ class Template(object):
         __traceback_hide__ = True
         # @@: if/else/else gets through
         for part in parts:
-            assert not isinstance(part, six.string_types)
+            assert not isinstance(part, str)
             name, pos = part[0], part[1]
             if name == 'else':
                 result = True
@@ -200,7 +210,7 @@ class Template(object):
         try:
             value = eval(code, ns)
             return value
-        except:
+        except Exception:
             exc_info = sys.exc_info()
             e = exc_info[1]
             if getattr(e, 'args'):
@@ -208,43 +218,37 @@ class Template(object):
             else:
                 arg0 = str(e)
             e.args = (self._add_line_info(arg0, pos),)
-            six.reraise(exc_info[0], e, exc_info[2])
+            reraise(exc_info[0], e, exc_info[2])
 
     def _exec(self, code, ns, pos):
         __traceback_hide__ = True
         try:
-            six.exec_(code, ns)
-        except:
+            exec(code, ns)
+        except Exception:
             exc_info = sys.exc_info()
             e = exc_info[1]
             e.args = (self._add_line_info(e.args[0], pos),)
-            six.reraise(exc_info[0], e, exc_info[2])
+            reraise(exc_info[0], e, exc_info[2])
 
     def _repr(self, value, pos):
         __traceback_hide__ = True
         try:
             if value is None:
                 return ''
-            if self._unicode:
-                try:
-                    value = six.text_type(value)
-                except UnicodeDecodeError:
-                    value = str(value)
-            else:
-                value = str(value)
-        except:
+            value = str(value)
+        except Exception:
             exc_info = sys.exc_info()
             e = exc_info[1]
             e.args = (self._add_line_info(e.args[0], pos),)
-            six.reraise(exc_info[0], e, exc_info[2])
+            reraise(exc_info[0], e, exc_info[2])
         else:
-            if self._unicode and isinstance(value, six.binary_type):
+            if self._unicode and isinstance(value, bytes):
                 if not self.decode_encoding:
                     raise UnicodeDecodeError(
                         'Cannot decode str value %r into unicode '
                         '(no default_encoding provided)' % value)
                 value = value.decode(self.default_encoding)
-            elif not self._unicode and isinstance(value, six.text_type):
+            elif not self._unicode and isinstance(value, str):
                 if not self.decode_encoding:
                     raise UnicodeEncodeError(
                         'Cannot encode unicode value %r into str '
@@ -305,7 +309,7 @@ class bunch(dict):
 ## HTML Templating
 ############################################################
 
-class html(object):
+class html:
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -317,24 +321,14 @@ class html(object):
 def html_quote(value):
     if value is None:
         return ''
-    if not isinstance(value, six.string_types):
-        if six.PY2 and hasattr(value, '__unicode__'):
-            value = unicode(value)
-        else:
-            value = str(value)
+    if not isinstance(value, str):
+        value = str(value)
     value = escape(value, 1)
-    if six.PY2 and isinstance(value, unicode):
-        value = value.encode('ascii', 'xmlcharrefreplace')
     return value
 
 def url(v):
-    if not isinstance(v, six.string_types):
-        if six.PY2 and hasattr(v, '__unicode__'):
-            v = unicode(v)
-        else:
-            v = str(v)
-    if six.PY2 and isinstance(v, unicode):
-        v = v.encode('utf8')
+    if not isinstance(v, str):
+        v = str(v)
     return quote(v)
 
 def attr(**kw):
@@ -447,7 +441,7 @@ def trim_lex(tokens):
     """
     for i in range(len(tokens)):
         current = tokens[i]
-        if isinstance(tokens[i], six.string_types):
+        if isinstance(tokens[i], str):
             # we don't trim this
             continue
         item = current[0]
@@ -461,8 +455,8 @@ def trim_lex(tokens):
             next = ''
         else:
             next = tokens[i+1]
-        if (not isinstance(next, six.string_types)
-            or not isinstance(prev, six.string_types)):
+        if (not isinstance(next, str)
+            or not isinstance(prev, str)):
             continue
         if ((not prev or trail_whitespace_re.search(prev))
             and (not next or lead_whitespace_re.search(next))):
@@ -541,7 +535,7 @@ def parse(s, name=None):
     return result
 
 def parse_expr(tokens, name, context=()):
-    if isinstance(tokens[0], six.string_types):
+    if isinstance(tokens[0], str):
         return tokens[0], tokens[1:]
     expr, pos = tokens[0]
     expr = expr.strip()

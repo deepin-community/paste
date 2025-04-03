@@ -13,7 +13,8 @@ try:
 except ImportError:
     from md5 import md5
 
-import six
+import operator
+byte2int = operator.itemgetter(0)
 
 good_characters = "23456789abcdefghjkmnpqrtuvwxyz"
 
@@ -23,7 +24,7 @@ def make_identifier(number):
     """
     Encodes a number as an identifier.
     """
-    if not isinstance(number, six.integer_types):
+    if not isinstance(number, int):
         raise ValueError(
             "You can only make identifiers out of integers (not %r)"
             % number)
@@ -61,18 +62,17 @@ def hash_identifier(s, length, pad=True, hasher=md5, prefix='',
         raise ValueError(
             "md5 cannot create hashes longer than 26 characters in "
             "length (you gave %s)" % length)
-    if isinstance(s, six.text_type):
+    if isinstance(s, str):
         s = s.encode('utf-8')
-    elif not isinstance(s, six.binary_type):
+    elif not isinstance(s, bytes):
         s = str(s)
-        if six.PY3:
-            s = s.encode('utf-8')
+        s = s.encode('utf-8')
     h = hasher(s)
     bin_hash = h.digest()
     modulo = base ** length
     number = 0
     for c in list(bin_hash):
-        number = (number * 256 + six.byte2int([c])) % modulo
+        number = (number * 256 + byte2int([c])) % modulo
     ident = make_identifier(number)
     if pad:
         ident = good_characters[0]*(length-len(ident)) + ident

@@ -4,9 +4,13 @@
 
 import pytest
 
-from paste.fixture import *
-from paste.registry import *
-from paste.registry import Registry
+from paste.fixture import TestApp
+from paste.registry import (
+    Registry,
+    RegistryManager,
+    StackedObjectProxy,
+    restorer,
+)
 from paste.evalexception.middleware import EvalException
 
 regobj = StackedObjectProxy()
@@ -23,8 +27,7 @@ def simpleapp_withregistry(environ, start_response):
     response_headers = [('Content-type','text/plain')]
     start_response(status, response_headers)
     body = 'Hello world!Value is %s\n' % regobj.keys()
-    if six.PY3:
-        body = body.encode('utf8')
+    body = body.encode('utf8')
     return [body]
 
 def simpleapp_withregistry_default(environ, start_response):
@@ -32,12 +35,11 @@ def simpleapp_withregistry_default(environ, start_response):
     response_headers = [('Content-type','text/plain')]
     start_response(status, response_headers)
     body = 'Hello world!Value is %s\n' % secondobj
-    if six.PY3:
-        body = body.encode('utf8')
+    body = body.encode('utf8')
     return [body]
 
 
-class RegistryUsingApp(object):
+class RegistryUsingApp:
     def __init__(self, var, value, raise_exc=False):
         self.var = var
         self.value = value
@@ -52,11 +54,10 @@ class RegistryUsingApp(object):
         response_headers = [('Content-type','text/plain')]
         start_response(status, response_headers)
         body = 'Hello world!\nThe variable is %s' % str(regobj)
-        if six.PY3:
-            body = body.encode('utf8')
+        body = body.encode('utf8')
         return [body]
 
-class RegistryUsingIteratorApp(object):
+class RegistryUsingIteratorApp:
     def __init__(self, var, value):
         self.var = var
         self.value = value
@@ -68,11 +69,10 @@ class RegistryUsingIteratorApp(object):
         response_headers = [('Content-type','text/plain')]
         start_response(status, response_headers)
         body = 'Hello world!\nThe variable is %s' % str(regobj)
-        if six.PY3:
-            body = body.encode('utf8')
+        body = body.encode('utf8')
         return iter([body])
 
-class RegistryMiddleMan(object):
+class RegistryMiddleMan:
     def __init__(self, app, var, value, depth):
         self.app = app
         self.var = var
@@ -84,8 +84,7 @@ class RegistryMiddleMan(object):
             environ['paste.registry'].register(self.var, self.value)
         line = ('\nInserted by middleware!\nInsertValue at depth %s is %s'
                 % (self.depth, str(regobj)))
-        if six.PY3:
-            line = line.encode('utf8')
+        line = line.encode('utf8')
         app_response = [line]
         app_iter = None
         app_iter = self.app(environ, start_response)
@@ -100,8 +99,7 @@ class RegistryMiddleMan(object):
             app_response.extend(response)
         line = ('\nAppended by middleware!\nAppendValue at \
                 depth %s is %s' % (self.depth, str(regobj)))
-        if six.PY3:
-            line = line.encode('utf8')
+        line = line.encode('utf8')
         app_response.append(line)
         return app_response
 

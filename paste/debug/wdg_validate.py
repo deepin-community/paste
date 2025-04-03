@@ -5,15 +5,15 @@ Middleware that tests the validity of all generated HTML using the
 `WDG HTML Validator <http://www.htmlhelp.com/tools/validator/>`_
 """
 
-from cStringIO import StringIO
+from io import StringIO
 import subprocess
 from paste.response import header_value
 import re
-import cgi
+import html
 
 __all__ = ['WDGValidateMiddleware']
 
-class WDGValidateMiddleware(object):
+class WDGValidateMiddleware:
 
     """
     Middleware that checks HTML and appends messages about the validity of
@@ -95,7 +95,7 @@ class WDGValidateMiddleware(object):
     def add_error(self, html_page, html_errors):
         add_text = ('<pre style="background-color: #ffd; color: #600; '
                     'border: 1px solid #000;">%s</pre>'
-                    % cgi.escape(html_errors))
+                    % html.escape(html_errors))
         match = self._end_body_regex.search(html_page)
         if match:
             return [html_page[:match.start()]

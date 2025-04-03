@@ -2,20 +2,18 @@
 # This module is part of the Python Paste Project and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-from paste.auth.digest import *
+from paste.auth.digest import digest_password, AuthDigestHandler
 from paste.wsgilib import raw_interactive
-from paste.httpexceptions import *
+from paste.httpexceptions import HTTPExceptionHandler
 from paste.httpheaders import AUTHORIZATION, WWW_AUTHENTICATE, REMOTE_USER
 import os
-import six
 
 def application(environ, start_response):
     content = REMOTE_USER(environ)
     start_response("200 OK",(('Content-Type', 'text/plain'),
                              ('Content-Length', len(content))))
 
-    if six.PY3:
-        content = content.encode('utf8')
+    content = content.encode('utf8')
     return [content]
 
 realm = "tag:clarkevans.com,2005:testing"
@@ -60,8 +58,8 @@ def test_digest():
 
 
 if os.environ.get("TEST_SOCKET", ""):
-    from six.moves.urllib.error import HTTPError
-    from six.moves.urllib.request import build_opener, HTTPDigestAuthHandler
+    from urllib.error import HTTPError
+    from urllib.request import build_opener, HTTPDigestAuthHandler
     from paste.debug.testserver import serve
     server = serve(application)
 

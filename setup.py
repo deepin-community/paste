@@ -1,18 +1,13 @@
 # Procedure to release a new version:
 #
-# - run tests: run tox
 # - update version in setup.py (__version__)
-# - update tag_build in setup.cfg
-# - check that "python setup.py sdist" contains all files tracked by
-#   the SCM (Mercurial): update MANIFEST.in if needed
 # - update changelog: docs/news.txt
+# - commit and push to git
+# - make release
 #
-# - git commit
-# - git tag -s VERSION
-# - git push
-# - python setup.py sdist bdist_wheel upload --sign
+# The final step will release to pypi and to Github
 
-__version__ = '3.5.0'
+__version__ = '3.10.1'
 
 from setuptools import setup, find_packages
 import sys, os
@@ -25,6 +20,7 @@ with open("README.rst") as fp:
 
 setup(name="Paste",
       version=__version__,
+      python_requires=">=3",
       description="Tools for using a Web Server Gateway Interface stack",
       long_description=README,
       classifiers=[
@@ -33,6 +29,7 @@ setup(name="Paste",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -46,6 +43,11 @@ setup(name="Paste",
       author="Chris Dent",
       author_email="chris.dent@gmail.com",
       url="https://pythonpaste.readthedocs.io/",
+      project_urls={
+        "Source": "https://github.com/pasteorg/paste",
+        "Bug Tracker": "https://github.com/pasteorg/paste/issues",
+        "Documentation": "https://pythonpaste.readthedocs.io"
+      },
       license="MIT",
       packages=find_packages(exclude=['ez_setup', 'examples', 'packages', 'tests*']),
       package_data=finddata.find_package_data(
@@ -54,7 +56,6 @@ setup(name="Paste",
       zip_safe=False,
       install_requires=[
         'setuptools',  # pkg_resources
-        'six>=1.4.0',
         ],
       extras_require={
         'subprocess': [],

@@ -5,27 +5,27 @@ WSGI applications that parse the URL and dispatch to on-disk resources
 """
 
 import os
-import six
 import sys
-import imp
 import mimetypes
+import warnings
+import importlib.util as imputil
 try:
-    import pkg_resources
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=DeprecationWarning)
+        import pkg_resources
 except ImportError:
     pkg_resources = None
 from paste import request
 from paste import fileapp
 from paste.util import import_string
 from paste import httpexceptions
+from paste.util import converters, NO_DEFAULT
 from .httpheaders import ETAG
-from paste.util import converters
-
-class NoDefault(object):
-    pass
 
 __all__ = ['URLParser', 'StaticURLParser', 'PkgResourcesParser']
 
-class URLParser(object):
+
+class URLParser:
 
     """
     WSGI middleware
@@ -80,15 +80,15 @@ class URLParser(object):
     parsers_by_directory = {}
 
     # This is lazily initialized
-    init_module = NoDefault
+    init_module = NO_DEFAULT
 
     global_constructors = {}
 
     def __init__(self, global_conf,
                  directory, base_python_name,
-                 index_names=NoDefault,
-                 hide_extensions=NoDefault,
-                 ignore_extensions=NoDefault,
+                 index_names=NO_DEFAULT,
+                 hide_extensions=NO_DEFAULT,
+                 ignore_extensions=NO_DEFAULT,
                  constructors=None,
                  **constructor_conf):
         """
@@ -111,15 +111,15 @@ class URLParser(object):
         self.base_python_name = base_python_name
         # This logic here should be deprecated since it is in
         # make_url_parser
-        if index_names is NoDefault:
+        if index_names is NO_DEFAULT:
             index_names = global_conf.get(
                 'index_names', ('index', 'Index', 'main', 'Main'))
         self.index_names = converters.aslist(index_names)
-        if hide_extensions is NoDefault:
+        if hide_extensions is NO_DEFAULT:
             hide_extensions = global_conf.get(
                 'hide_extensions', ('.pyc', '.bak', '.py~', '.pyo'))
         self.hide_extensions = converters.aslist(hide_extensions)
-        if ignore_extensions is NoDefault:
+        if ignore_extensions is NO_DEFAULT:
             ignore_extensions = global_conf.get(
                 'ignore_extensions', ())
         self.ignore_extensions = converters.aslist(ignore_extensions)
@@ -134,13 +134,13 @@ class URLParser(object):
                     "'constructor .ext = import_expr'; you gave %r "
                     "(=%r)" % (name, value))
             ext = name[len('constructor '):].strip()
-            if isinstance(value, (str, unicode)):
+            if isinstance(value, str):
                 value = import_string.eval_import(value)
             self.constructors[ext] = value
 
     def __call__(self, environ, start_response):
         environ['paste.urlparser.base_python_name'] = self.base_python_name
-        if self.init_module is NoDefault:
+        if self.init_module is NO_DEFAULT:
             self.init_module = self.find_init_module(environ)
         path_info = environ.get('PATH_INFO', '')
         if not path_info:
@@ -376,7 +376,6 @@ def load_module_from_name(environ, filename, module_name, errors):
             return None
         f.write('#\n')
         f.close()
-    fp = None
     if module_name in sys.modules:
         return sys.modules[module_name]
     if '.' in module_name:
@@ -386,14 +385,15 @@ def load_module_from_name(environ, filename, module_name, errors):
                                        parent_name, errors)
     else:
         base_name = module_name
-    fp = None
-    try:
-        fp, pathname, stuff = imp.find_module(
-            base_name, [os.path.dirname(filename)])
-        module = imp.load_module(module_name, fp, pathname, stuff)
-    finally:
-        if fp is not None:
-            fp.close()
+    module = None
+
+    # imp is deprecated and will be removed in Python 3.12
+    spec = imputil.spec_from_file_location(base_name, filename)
+    if spec is not None:
+        module = imputil.module_from_spec(spec)
+        sys.modules[base_name] = module
+        spec.loader.exec_module(module)
+
     return module
 
 def make_py(parser, environ, filename):
@@ -417,7 +417,7 @@ def make_py(parser, environ, filename):
 
 URLParser.register_constructor('.py', make_py)
 
-class StaticURLParser(object):
+class StaticURLParser:
     """
     Like ``URLParser`` but only serves static files.
 
@@ -526,7 +526,7 @@ class PkgResourcesParser(StaticURLParser):
     def __init__(self, egg_or_spec, resource_name, manager=None, root_resource=None):
         if pkg_resources is None:
             raise NotImplementedError("This class requires pkg_resources.")
-        if isinstance(egg_or_spec, (six.binary_type, six.text_type)):
+        if isinstance(egg_or_spec, (bytes, str)):
             self.egg = pkg_resources.get_distribution(egg_or_spec)
         else:
             self.egg = egg_or_spec

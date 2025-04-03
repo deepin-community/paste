@@ -1,16 +1,11 @@
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
 # Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
-import cgi
 import copy
-import six
 import sys
+from collections.abc import MutableMapping as DictMixin
 
-try:
-    # Python 3
-    from collections.abc import MutableMapping as DictMixin
-except ImportError:
-    # Python 2
-    from UserDict import DictMixin
+from .field_storage import FieldStorage
+
 
 class MultiDict(DictMixin):
 
@@ -34,7 +29,7 @@ class MultiDict(DictMixin):
             self._items = list(items)
         else:
             self._items = []
-        self._items.extend(six.iteritems(kw))
+        self._items.extend(kw.items())
 
     def __getitem__(self, key):
         for k, v in self._items:
@@ -263,15 +258,13 @@ class UnicodeMultiDict(DictMixin):
 
         ``FieldStorage`` objects are specially handled.
         """
-        if isinstance(value, cgi.FieldStorage):
+        if isinstance(value, FieldStorage):
             # decode FieldStorage's field name and filename
-            decode_name = self.decode_keys and isinstance(value.name, six.binary_type)
-            if six.PY2 or decode_name:
+            decode_name = self.decode_keys and isinstance(value.name, bytes)
+            if decode_name:
                 value = copy.copy(value)
                 if decode_name:
                     value.name = value.name.decode(self.encoding, self.errors)
-                if six.PY2:
-                    value.filename = value.filename.decode(self.encoding, self.errors)
         else:
             try:
                 value = value.decode(self.encoding, self.errors)
@@ -318,7 +311,7 @@ class UnicodeMultiDict(DictMixin):
         request.
         """
         unicode_mixed = {}
-        for key, value in six.iteritems(self.multi.mixed()):
+        for key, value in self.multi.mixed().items():
             if isinstance(value, list):
                 value = [self._decode_value(value) for value in value]
             else:
@@ -332,7 +325,7 @@ class UnicodeMultiDict(DictMixin):
         list of values.
         """
         unicode_dict = {}
-        for key, value in six.iteritems(self.multi.dict_of_lists()):
+        for key, value in self.multi.dict_of_lists().items():
             value = [self._decode_value(value) for value in value]
             unicode_dict[self._decode_key(key)] = value
         return unicode_dict
@@ -388,10 +381,10 @@ class UnicodeMultiDict(DictMixin):
 
     def items(self):
         return [(self._decode_key(k), self._decode_value(v)) for \
-                    k, v in six.iteritems(self.multi)]
+                    k, v in self.multi.items()]
 
     def iteritems(self):
-        for k, v in six.iteritems(self.multi):
+        for k, v in self.multi.items():
             yield (self._decode_key(k), self._decode_value(v))
 
     def values(self):

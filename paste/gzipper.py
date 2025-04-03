@@ -11,14 +11,15 @@ Gzip-encodes the response.
 """
 
 import gzip
+import io
+
 from paste.response import header_value, remove_header
 from paste.httpheaders import CONTENT_LENGTH
-import six
 
-class GzipOutput(object):
+class GzipOutput:
     pass
 
-class middleware(object):
+class middleware:
 
     def __init__(self, application, compress_level=6):
         self.application = application
@@ -40,12 +41,12 @@ class middleware(object):
 
         return response.write()
 
-class GzipResponse(object):
+class GzipResponse:
 
     def __init__(self, start_response, compress_level):
         self.start_response = start_response
         self.compress_level = compress_level
-        self.buffer = six.BytesIO()
+        self.buffer = io.BytesIO()
         self.compressible = False
         self.content_length = None
 

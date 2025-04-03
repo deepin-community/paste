@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-15 -*-
 """IP4 address range set implementation.
 
 Implements an IPv4-range type.
@@ -21,7 +20,6 @@ __date__ = "2006-01-20"
 
 from paste.util import intset
 import socket
-import six
 
 
 # IP4Range class
@@ -88,14 +86,14 @@ class IP4Range(intset.IntSet):
                 addr1, addr2 = argval
                 if isinstance(addr1,str):
                     addr1 = self._parseAddrRange(addr1)[0]
-                elif not isinstance(addr1, six.integer_types):
+                elif not isinstance(addr1, int):
                     raise TypeError("Invalid argument.")
                 if isinstance(addr2,str):
                     addr2 = self._parseAddrRange(addr2)[1]
-                elif not isinstance(addr2, six.integer_types):
+                elif not isinstance(addr2, int):
                     raise TypeError("Invalid argument.")
                 args[i] = (addr1,addr2)
-            elif not isinstance(argval, six.integer_types):
+            elif not isinstance(argval, int):
                 raise TypeError("Invalid argument.")
 
         # Initialize the integer set.

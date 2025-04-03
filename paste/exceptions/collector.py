@@ -23,7 +23,7 @@ supplements
 import sys
 import traceback
 import time
-from six.moves import cStringIO as StringIO
+from io import StringIO
 import linecache
 from paste.exceptions import serial_number_generator
 import warnings
@@ -34,7 +34,7 @@ FALLBACK_ENCODING = 'UTF-8'
 
 __all__ = ['collect_exception', 'ExceptionCollector']
 
-class ExceptionCollector(object):
+class ExceptionCollector:
 
     """
     Produces a data structure that can be used by formatters to
@@ -235,7 +235,7 @@ class ExceptionCollector(object):
         if revision is not None:
             try:
                 revision = str(revision).strip()
-            except:
+            except Exception:
                 revision = '???'
         return revision
 
@@ -299,7 +299,7 @@ class ExceptionCollector(object):
                 if data['supplement'].extra:
                     for key, value in data['supplement'].extra.items():
                         extra_data.setdefault(key, []).append(value)
-            except:
+            except Exception:
                 if DEBUG_EXCEPTION_FORMATTER:
                     out = StringIO()
                     traceback.print_exc(file=out)
@@ -311,7 +311,7 @@ class ExceptionCollector(object):
             tbi = locals.get('__traceback_info__', None)
             if tbi is not None:
                 data['traceback_info'] = str(tbi)
-        except:
+        except Exception:
             pass
 
         marker = []
@@ -321,7 +321,7 @@ class ExceptionCollector(object):
                 tbh = locals.get(name, globals.get(name, marker))
                 if tbh is not marker:
                     data[name[2:-2]] = tbh
-            except:
+            except Exception:
                 pass
 
         return data
@@ -373,7 +373,7 @@ class ExceptionCollector(object):
                 new_result = decorator(result)
                 if new_result is not None:
                     result = new_result
-            except:
+            except Exception:
                 pass
         return result
 
@@ -382,7 +382,7 @@ class ExceptionCollector(object):
             return str(obj)
         except UnicodeEncodeError:
             try:
-                return unicode(obj).encode(FALLBACK_ENCODING, 'replace')
+                return str(obj).encode(FALLBACK_ENCODING, 'replace')
             except UnicodeEncodeError:
                 # This is when something is really messed up, but this can
                 # happen when the __str__ of an object has to handle unicode
@@ -390,7 +390,7 @@ class ExceptionCollector(object):
 
 limit = 200
 
-class Bunch(object):
+class Bunch:
 
     """
     A generic container
@@ -517,7 +517,7 @@ def collect_exception(t, v, tb, limit=None):
 
       try:
           blah blah
-      except:
+      except Exception:
           exc_data = collect_exception(*sys.exc_info())
     """
     return col.collectException(t, v, tb, limit=limit)

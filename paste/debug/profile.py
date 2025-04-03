@@ -11,15 +11,14 @@ import os
 import hotshot
 import hotshot.stats
 import threading
-import cgi
-import six
+import html
 import time
-from cStringIO import StringIO
+from io import StringIO
 from paste import response
 
 __all__ = ['ProfileMiddleware', 'profile_decorator']
 
-class ProfileMiddleware(object):
+class ProfileMiddleware:
 
     """
     Middleware that profiles all requests.
@@ -79,7 +78,7 @@ class ProfileMiddleware(object):
             output_callers = capture_output(
                 stats.print_callers, self.limit)
             body += '<pre style="%s">%s\n%s</pre>' % (
-                self.style, cgi.escape(output), cgi.escape(output_callers))
+                self.style, html.escape(output), html.escape(output_callers))
             return [body]
         finally:
             self.lock.release()
@@ -140,7 +139,7 @@ def profile_decorator(**options):
         return replacement
     return decorator
 
-class DecoratedProfile(object):
+class DecoratedProfile:
 
     lock = threading.Lock()
 
@@ -168,7 +167,7 @@ class DecoratedProfile(object):
             start_time = time.time()
             try:
                 result = prof.runcall(func, *args, **kw)
-            except:
+            except Exception:
                 exc_info = sys.exc_info()
             end_time = time.time()
         finally:
@@ -201,7 +200,7 @@ class DecoratedProfile(object):
             f.close()
         if exc_info:
             # We captured an exception earlier, now we re-raise it
-            six.reraise(exc_info[0], exc_info[1], exc_info[2])
+            raise exc_info
         return result
 
     def format_function(self, func, *args, **kw):
